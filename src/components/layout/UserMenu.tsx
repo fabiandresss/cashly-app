@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { signOut } from '@/lib/auth'
-import { useSettings } from '@/lib/settings'
+import { useAuth } from '@/lib/auth-context'
 
 const LOGOUT_ICON = 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9'
 
@@ -12,7 +12,7 @@ function initials(name: string): string {
 }
 
 export function UserMenu() {
-  const { name } = useSettings()
+  const { displayName: name, user } = useAuth()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -70,6 +70,7 @@ export function UserMenu() {
         >
           <div className="border-b border-line px-3 pb-2 pt-1.5">
             <p className="truncate text-sm font-semibold text-heading">{name}</p>
+            {user?.email && <p className="truncate text-xs text-muted">{user.email}</p>}
           </div>
           <button
             type="button"

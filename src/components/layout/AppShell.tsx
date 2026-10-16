@@ -3,10 +3,10 @@ import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
 import { LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
-import { useSettings } from '@/lib/settings'
+import { useAuth } from '@/lib/auth-context'
 
 export function AppShell() {
-  const { name } = useSettings()
+  const { displayName: name } = useAuth()
   return (
     <div className="flex h-full">
       <aside className="relative hidden w-72 shrink-0 flex-col overflow-hidden bg-gradient-to-b from-brand-900 via-brand-900 to-brand-950 p-5 text-white md:flex">
