@@ -40,18 +40,41 @@ const SEND = 'M22 2L11 13M22 2l-7 20-4-9-9-4z'
 const CLOCK = 'M12 8v4l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
 const SAVE_WARNING = 'Esta conversación no se pudo guardar en tu historial. Puedes seguir usándola.'
 
+/** Reloj en milisegundos (fuera del componente para no marcarlo como impuro). */
+function nowMs(): number {
+  return Date.now()
+}
+
 function TypingIndicator() {
+  // El componente se monta al empezar a pensar, así que cuenta desde 0.
+  const [seconds, setSeconds] = useState(0)
+
+  useEffect(() => {
+    const startedAt = Date.now()
+    const id = setInterval(() => setSeconds(Math.floor((Date.now() - startedAt) / 1000)), 250)
+    return () => clearInterval(id)
+  }, [])
+
   return (
-    <div className="flex items-end gap-2.5" aria-live="polite" aria-label="El asistente está escribiendo">
-      <AiAvatar className="h-9 w-9"/>
-      <div className="flex gap-1.5 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5 shadow-card">
-        {[0, 150, 300].map((delay) => (
-          <span
-            key={delay}
-            className="h-2 w-2 animate-bounce rounded-full bg-brand-500"
-            style={{ animationDelay: `${delay}ms` }}
-          />
-        ))}
+    <div className="flex items-end gap-2.5" role="status" aria-label={`Cashly AI está pensando, ${seconds} segundos`}>
+      <AiAvatar className="h-9 w-9" />
+      <div className="flex items-center gap-3 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5 shadow-card">
+        <div className="flex gap-1.5">
+          {[0, 150, 300].map((delay) => (
+            <span
+              key={delay}
+              className="h-2 w-2 animate-bounce rounded-full bg-brand-500"
+              style={{ animationDelay: `${delay}ms` }}
+            />
+          ))}
+        </div>
+        <span className="text-sm text-muted">
+          Pensando…{' '}
+          <span className="inline-block min-w-[2.2ch] text-right font-semibold tabular-nums text-heading">
+            {seconds}
+          </span>{' '}
+          s
+        </span>
       </div>
     </div>
   )
@@ -69,6 +92,8 @@ export function AsistentePage() {
   // Propuestas de movimientos, por posición del mensaje del asistente.
   const [proposals, setProposals] = useState<Record<number, ProposalState>>({})
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  // Segundos que tardó cada respuesta, por posición del mensaje.
+  const [durations, setDurations] = useState<Record<number, number>>({})
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -85,8 +110,11 @@ export function AsistentePage() {
   async function request(chat: ChatMessage[], convId: string | null) {
     setLoading(true)
     setError(null)
+    const startedAt = nowMs()
     try {
       const { reply, proposal } = await askAssistant(chat)
+      const took = Math.max(1, Math.round((nowMs() - startedAt) / 1000))
+      setDurations((prev) => ({ ...prev, [chat.length]: took }))
       setMessages([...chat, { role: 'assistant', content: reply }])
       if (proposal) {
         setProposals((prev) => ({ ...prev, [chat.length]: { proposal, status: 'pending', error: null } }))
@@ -139,6 +167,7 @@ export function AsistentePage() {
       const saved = await listMessages(id)
       setMessages(saved)
       setProposals({})
+      setDurations({})
       setConversationId(id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo cargar la conversación.')
@@ -177,6 +206,7 @@ export function AsistentePage() {
 
   function reset() {
     setProposals({})
+    setDurations({})
     setEditingIndex(null)
     setMessages([])
     setConversationId(null)
@@ -272,6 +302,9 @@ export function AsistentePage() {
                         <RichText text={message.content} />
                       </div>
                     </div>
+                    {durations[index] !== undefined && (
+                      <p className="ml-[2.9rem] text-xs text-muted">Respondió en {durations[index]} s</p>
+                    )}
                     {proposals[index] && (
                       <ProposalCard
                         proposal={proposals[index].proposal}

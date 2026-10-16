@@ -64,6 +64,32 @@ export interface BudgetInput {
 
 export type BudgetStatus = 'ok' | 'warning' | 'exceeded'
 
+export interface Debt {
+  id: string
+  name: string
+  total_amount: number
+  due_date: string | null
+  category_id: string | null
+  notes: string | null
+  /** Suma de los pagos registrados. */
+  paid: number
+}
+
+export interface DebtInput {
+  name: string
+  total_amount: number
+  due_date: string | null
+  category_id: string | null
+  notes: string | null
+}
+
+export interface DebtPayment {
+  id: string
+  amount: number
+  paid_on: string
+  transaction_id: string | null
+}
+
 export type RecurringFrequency = 'monthly' | 'weekly' | 'yearly'
 
 export interface RecurringRule {

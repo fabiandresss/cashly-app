@@ -6,6 +6,9 @@ import type {
   BudgetInput,
   Category,
   CategoryInput,
+  Debt,
+  DebtInput,
+  DebtPayment,
   GoalContribution,
   GoalInput,
   RecurringInput,
@@ -391,6 +394,91 @@ export async function listContributions(goalId: string): Promise<GoalContributio
 export async function deleteContribution(id: string): Promise<void> {
   const { error } = await db().from('goal_contributions').delete().eq('id', id)
   if (error) fail(error)
+}
+
+// ---------- Deudas ----------
+
+const DEBT_ERRORS: Record<string, string> = {
+  exceeds_remaining: 'El pago supera lo que falta por pagar de esta deuda.',
+  invalid_amount: 'Ingresa un monto mayor a 0.',
+  debt_not_found: 'No se encontró la deuda.',
+  payment_not_found: 'No se encontró el pago.',
+}
+
+function debtFail(error: { code?: string; message?: string }): never {
+  const known = Object.entries(DEBT_ERRORS).find(([key]) => error.message?.includes(key))
+  if (known) throw new Error(known[1])
+  fail(error)
+}
+
+export async function listDebts(): Promise<Debt[]> {
+  const [debtsRes, paymentsRes] = await Promise.all([
+    db()
+      .from('debts')
+      .select('id, name, total_amount, due_date, category_id, notes')
+      .order('created_at', { ascending: false }),
+    db().from('debt_payments').select('debt_id, amount'),
+  ])
+  if (debtsRes.error) fail(debtsRes.error)
+  if (paymentsRes.error) fail(paymentsRes.error)
+
+  const paid = new Map<string, number>()
+  for (const p of (paymentsRes.data ?? []) as Array<{ debt_id: string; amount: number }>) {
+    paid.set(p.debt_id, (paid.get(p.debt_id) ?? 0) + Number(p.amount))
+  }
+
+  return ((debtsRes.data ?? []) as Array<Record<string, unknown>>).map((d) => ({
+    id: String(d.id),
+    name: String(d.name),
+    total_amount: Number(d.total_amount),
+    due_date: (d.due_date as string | null) ?? null,
+    category_id: d.category_id ? String(d.category_id) : null,
+    notes: (d.notes as string | null) ?? null,
+    paid: paid.get(String(d.id)) ?? 0,
+  }))
+}
+
+export async function createDebt(input: DebtInput): Promise<void> {
+  const { error } = await db().from('debts').insert(input)
+  if (error) fail(error)
+}
+
+export async function updateDebt(id: string, input: DebtInput): Promise<void> {
+  const { error } = await db().from('debts').update(input).eq('id', id)
+  if (error) fail(error)
+}
+
+export async function deleteDebt(id: string): Promise<void> {
+  const { error } = await db().from('debts').delete().eq('id', id)
+  if (error) fail(error)
+}
+
+/** Registra un pago y genera el movimiento de gasto correspondiente. */
+export async function payDebt(debtId: string, amount: number, paidOn: string): Promise<void> {
+  const { error } = await db().rpc('pay_debt', { p_debt_id: debtId, p_amount: amount, p_paid_on: paidOn })
+  if (error) debtFail(error)
+}
+
+export async function listDebtPayments(debtId: string): Promise<DebtPayment[]> {
+  const { data, error } = await db()
+    .from('debt_payments')
+    .select('id, amount, paid_on, transaction_id')
+    .eq('debt_id', debtId)
+    .order('paid_on', { ascending: false })
+    .order('created_at', { ascending: false })
+  if (error) fail(error)
+  return ((data ?? []) as Array<Record<string, unknown>>).map((p) => ({
+    id: String(p.id),
+    amount: Number(p.amount),
+    paid_on: String(p.paid_on),
+    transaction_id: p.transaction_id ? String(p.transaction_id) : null,
+  }))
+}
+
+/** Elimina un pago y el gasto que había generado. */
+export async function undoDebtPayment(paymentId: string): Promise<void> {
+  const { error } = await db().rpc('undo_debt_payment', { p_payment_id: paymentId })
+  if (error) debtFail(error)
 }
 
 // ---------- Ajustes del usuario ----------
