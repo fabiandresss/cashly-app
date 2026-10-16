@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ContributionForm } from '@/components/features/ContributionForm'
+import { SavingsSimulator } from '@/components/features/SavingsSimulator'
 import { GoalForm } from '@/components/features/GoalForm'
 import { Alert } from '@/components/ui/Alert'
 import { Card } from '@/components/ui/Card'
@@ -28,6 +29,7 @@ const PLUS = 'M12 5v14M5 12h14'
 const EDIT = 'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z'
 const TRASH = 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6'
 const CLOCK = 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l3 2'
+const CALC = 'M5 3h14v18H5zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01'
 const TARGET = 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 17a5 5 0 100-10 5 5 0 000 10zM12 13a1 1 0 100-2 1 1 0 000 2z'
 
 const percent = new Intl.NumberFormat('es-CL', { style: 'percent', maximumFractionDigits: 0 })
@@ -109,6 +111,7 @@ export function MetasPage() {
   const [contributing, setContributing] = useState<SavingsGoal | null>(null)
   const [history, setHistory] = useState<SavingsGoal | null>(null)
   const [toDelete, setToDelete] = useState<SavingsGoal | null>(null)
+  const [simulating, setSimulating] = useState<{ open: boolean; goal?: SavingsGoal | undefined }>({ open: false })
 
   const goals = query.data ?? []
   const totalSaved = goals.reduce((acc, g) => acc + g.saved, 0)
@@ -125,14 +128,24 @@ export function MetasPage() {
     <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <PageHeader title="Metas de ahorro" description="Define objetivos y sigue cuánto llevas ahorrado." />
-        <button
-          type="button"
-          onClick={() => setForm({ open: true })}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
-        >
-          <Icon path={PLUS} className="h-4 w-4" />
-          Nueva meta
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setSimulating({ open: true })}
+            className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-brand-50"
+          >
+            <Icon path={CALC} className="h-4 w-4" />
+            Simulador
+          </button>
+          <button
+            type="button"
+            onClick={() => setForm({ open: true })}
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
+          >
+            <Icon path={PLUS} className="h-4 w-4" />
+            Nueva meta
+          </button>
+        </div>
       </div>
 
       {query.error && (
@@ -257,6 +270,16 @@ export function MetasPage() {
                     Historial
                   </button>
                 </div>
+                {!done && (
+                  <button
+                    type="button"
+                    onClick={() => setSimulating({ open: true, goal })}
+                    className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-link transition-colors hover:bg-brand-50"
+                  >
+                    <Icon path={CALC} className="h-4 w-4" />
+                    Simular cuándo llego
+                  </button>
+                )}
               </Card>
             )
           })}
@@ -278,6 +301,24 @@ export function MetasPage() {
               setContributing(null)
               query.reload()
             }}
+          />
+        </Modal>
+      )}
+
+      {simulating.open && (
+        <Modal
+          title={simulating.goal ? `Simular · ${simulating.goal.name}` : 'Simulador de ahorro'}
+          onClose={() => setSimulating({ open: false })}
+        >
+          <SavingsSimulator
+            {...(simulating.goal
+              ? {
+                  initialTarget: simulating.goal.target_amount,
+                  initialSaved: Math.max(simulating.goal.saved, 0),
+                  targetDate: simulating.goal.target_date,
+                  initialMonthly: monthlyNeeded(simulating.goal) ?? 100_000,
+                }
+              : { initialMonthly: 100_000 })}
           />
         </Modal>
       )}

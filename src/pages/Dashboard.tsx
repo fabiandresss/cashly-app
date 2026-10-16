@@ -9,6 +9,7 @@ import { StatCard } from '@/components/ui/StatCard'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { useAuth } from '@/lib/auth-context'
 import { summarize } from '@/lib/dashboard'
+import { computeInsights } from '@/lib/insights'
 import { budgetStatus, STATUS_STYLES, sumExpenses } from '@/lib/budgets'
 import {
   DEFAULT_ALERT_THRESHOLD,
@@ -78,6 +79,19 @@ export function DashboardPage() {
       .sort((a, b) => b.ratio - a.ratio)
       .slice(0, 4)
   }, [budgetsQuery.data, transactionsQuery.data, month, threshold])
+
+  const insights = useMemo(
+    () =>
+      transactionsQuery.data
+        ? computeInsights(
+            transactionsQuery.data,
+            month,
+            (id) => (id ? (categoryById.get(id)?.name ?? 'Categoría') : 'Sin categoría'),
+            money,
+          )
+        : [],
+    [transactionsQuery.data, month, categoryById, money],
+  )
 
   const [monthName] = useState(() =>
     new Date().toLocaleDateString('es-CL', { month: 'long', year: 'numeric' }),
@@ -222,6 +236,28 @@ export function DashboardPage() {
           )}
         </Card>
       </div>
+
+      {insights.length > 0 && (
+        <Card className="mt-5" delay={560}>
+          <h2 className="text-base font-semibold text-heading">Alertas y hábitos</h2>
+          <p className="mb-4 text-xs text-muted">Detectado automáticamente en tus movimientos</p>
+          <ul className="space-y-3">
+            {insights.map((insight) => (
+              <li
+                key={insight.id}
+                className={`rounded-xl border px-4 py-3 ${
+                  insight.severity === 'warning'
+                    ? 'border-amber-300/60 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10'
+                    : 'border-line bg-brand-50/60'
+                }`}
+              >
+                <p className="text-sm font-semibold text-heading">{insight.title}</p>
+                <p className="mt-0.5 text-xs text-muted">{insight.detail}</p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {budgetProgress.length > 0 && (
         <Card className="mt-5" delay={600}>

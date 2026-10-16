@@ -1,5 +1,5 @@
 import { resolveIcon } from '@/lib/categoryIcons'
-import { monthRange } from '@/lib/format'
+import { monthRange, parseAmount } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type {
   Budget,
@@ -14,6 +14,7 @@ import type {
   Transaction,
   TransactionFilters,
   TransactionInput,
+  TransactionTemplate,
 } from '@/types/db'
 
 const ERROR_BY_CODE: Record<string, string> = {
@@ -81,24 +82,57 @@ function normalize(row: Record<string, unknown>): Transaction {
   return { ...(row as unknown as Transaction), amount: Number(row.amount) }
 }
 
+/** Máximo de filas que devuelve una búsqueda (se avisa en pantalla si se alcanza). */
+export const SEARCH_LIMIT = 3000
+
+/** Quita caracteres que tienen significado especial en los filtros de PostgREST/LIKE. */
+function sanitizeSearch(text: string): string {
+  return text
+    .replace(/[%_,()*]/g, ' ')
+    .replace(/\\/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 60)
+}
+
 export async function listTransactions(filters: TransactionFilters): Promise<Transaction[]> {
-  const { from, to } = monthRange(filters.month)
-  let query = db()
-    .from('transactions')
-    .select(TRANSACTION_COLUMNS)
-    .gte('occurred_on', from)
-    .lt('occurred_on', to)
-    .order('occurred_on', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(500)
+  const pageSize = 1000
+  const rows: Transaction[] = []
+  const search = sanitizeSearch(filters.query)
+  const min = filters.minAmount ? parseAmount(filters.minAmount) : null
+  const max = filters.maxAmount ? parseAmount(filters.maxAmount) : null
 
-  if (filters.type !== 'all') query = query.eq('type', filters.type)
-  if (filters.categoryId === 'none') query = query.is('category_id', null)
-  else if (filters.categoryId !== 'all') query = query.eq('category_id', filters.categoryId)
+  for (let start = 0; start < SEARCH_LIMIT; start += pageSize) {
+    let query = db()
+      .from('transactions')
+      .select(TRANSACTION_COLUMNS)
+      .order('occurred_on', { ascending: false })
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: true })
+      .range(start, Math.min(start + pageSize, SEARCH_LIMIT) - 1)
 
-  const { data, error } = await query
-  if (error) fail(error)
-  return (data ?? []).map((row) => normalize(row as Record<string, unknown>))
+    if (filters.period === 'month') {
+      const { from, to } = monthRange(filters.month)
+      query = query.gte('occurred_on', from).lt('occurred_on', to)
+    } else if (filters.period === 'range') {
+      if (filters.from) query = query.gte('occurred_on', filters.from)
+      if (filters.to) query = query.lte('occurred_on', filters.to)
+    }
+
+    if (filters.type !== 'all') query = query.eq('type', filters.type)
+    if (filters.categoryId === 'none') query = query.is('category_id', null)
+    else if (filters.categoryId !== 'all') query = query.eq('category_id', filters.categoryId)
+    if (search) query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`)
+    if (min !== null) query = query.gte('amount', min)
+    if (max !== null) query = query.lte('amount', max)
+
+    const { data, error } = await query
+    if (error) fail(error)
+    const page = data ?? []
+    rows.push(...page.map((row) => normalize(row as Record<string, unknown>)))
+    if (page.length < pageSize) break
+  }
+  return rows
 }
 
 /** Trae todos los movimientos paginando (PostgREST limita 1000 filas por consulta). */
@@ -195,6 +229,34 @@ export async function listMonthExpenses(month: string): Promise<Transaction[]> {
     if (page.length < pageSize) break
   }
   return rows
+}
+
+// ---------- Plantillas ----------
+
+export async function listTemplates(): Promise<TransactionTemplate[]> {
+  const { data, error } = await db()
+    .from('transaction_templates')
+    .select('id, type, amount, category_id, name, description')
+    .order('created_at', { ascending: false })
+  if (error) fail(error)
+  return ((data ?? []) as Array<Record<string, unknown>>).map((t) => ({
+    id: String(t.id),
+    type: t.type as TransactionTemplate['type'],
+    amount: Number(t.amount),
+    category_id: t.category_id ? String(t.category_id) : null,
+    name: String(t.name),
+    description: (t.description as string | null) ?? null,
+  }))
+}
+
+export async function createTemplate(input: Omit<TransactionTemplate, 'id'>): Promise<void> {
+  const { error } = await db().from('transaction_templates').insert(input)
+  if (error) fail(error)
+}
+
+export async function deleteTemplate(id: string): Promise<void> {
+  const { error } = await db().from('transaction_templates').delete().eq('id', id)
+  if (error) fail(error)
 }
 
 // ---------- Movimientos programados ----------
