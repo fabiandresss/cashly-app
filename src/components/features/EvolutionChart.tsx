@@ -1,11 +1,10 @@
+import { useMoney } from '@/hooks/useMoney'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { formatMoney } from '@/lib/format'
 import type { MonthPoint } from '@/lib/dashboard'
 
 const INCOME_COLOR = '#10b981'
 const EXPENSE_COLOR = '#f59e0b'
 
-const compact = new Intl.NumberFormat('es-CL', { notation: 'compact', maximumFractionDigits: 1 })
 
 interface EvolutionChartProps {
   data: readonly MonthPoint[]
@@ -21,6 +20,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 }
 
 export function EvolutionChart({ data }: EvolutionChartProps) {
+  const { money, tick } = useMoney()
   return (
     <div>
       <div className="mb-3 flex gap-4">
@@ -41,12 +41,12 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
               tickLine={false}
               axisLine={false}
               width={44}
-              tickFormatter={(value: number) => compact.format(value)}
+              tickFormatter={(value: number) => tick(value)}
               tick={{ fill: 'var(--color-muted)', fontSize: 12 }}
             />
             <Tooltip
               cursor={{ fill: 'var(--color-brand-50)' }}
-              formatter={(value, name) => [formatMoney(Number(value ?? 0)), name === 'income' ? 'Ingresos' : 'Gastos']}
+              formatter={(value, name) => [money(Number(value ?? 0)), name === 'income' ? 'Ingresos' : 'Gastos']}
               contentStyle={{
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-line)',

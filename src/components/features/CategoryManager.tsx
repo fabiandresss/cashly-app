@@ -16,7 +16,7 @@ const PALETTE = ['#10b981', '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6
 const EDIT = 'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z'
 const TRASH = 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6'
 
-function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
+export function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
   return (
     <div role="radiogroup" aria-label="Color" className="flex flex-wrap gap-2">
       {PALETTE.map((color) => (
@@ -37,7 +37,7 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (color: str
   )
 }
 
-function IconPicker({
+export function IconPicker({
   value,
   color,
   onChange,
@@ -47,7 +47,11 @@ function IconPicker({
   onChange: (icon: string) => void
 }) {
   return (
-    <div role="radiogroup" aria-label="Ícono" className="grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6">
+    <div
+      role="radiogroup"
+      aria-label="Ícono"
+      className="grid max-h-56 grid-cols-6 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+    >
       {ICON_KEYS.map((key) => {
         const active = value === key
         return (

@@ -18,6 +18,7 @@ interface TransactionFormProps {
 interface FieldErrors {
   amount?: string
   date?: string
+  name?: string
   description?: string
 }
 
@@ -28,6 +29,7 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
   const [amount, setAmount] = useState(initial ? amountToInput(initial.amount) : '')
   const [date, setDate] = useState(initial?.occurred_on ?? todayISO())
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? NO_CATEGORY)
+  const [name, setName] = useState(initial?.name ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [errors, setErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
@@ -54,6 +56,7 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
     if (parsed === null || parsed <= 0) next.amount = 'Ingresa un monto mayor a 0.'
     else if (parsed > 999_999_999_999) next.amount = 'El monto es demasiado grande.'
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) next.date = 'Selecciona una fecha válida.'
+    if (name.length > 100) next.name = 'Máximo 100 caracteres.'
     if (description.length > 200) next.description = 'Máximo 200 caracteres.'
     setErrors(next)
     if (Object.keys(next).length > 0 || parsed === null) return
@@ -65,6 +68,7 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
         amount: parsed,
         occurred_on: date,
         category_id: categoryId === NO_CATEGORY ? null : categoryId,
+        name: name.trim() || null,
         description: description.trim() || null,
       })
     } catch (err) {
@@ -77,6 +81,15 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {formError && <Alert tone="error">{formError}</Alert>}
       <TypeToggle value={type} onChange={changeType} />
+      <TextField
+        label="Nombre"
+        name="name"
+        placeholder="Ej: Supermercado Jumbo"
+        maxLength={100}
+        value={name}
+        onChange={setName}
+        error={errors.name}
+      />
       <MoneyField label="Monto" name="amount" value={amount} onChange={setAmount} error={errors.amount} />
       <TextField
         label="Fecha"
@@ -90,7 +103,7 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
       <TextField
         label="Descripción (opcional)"
         name="description"
-        placeholder="Ej: Supermercado"
+        placeholder="Ej: Compra mensual de la casa"
         maxLength={200}
         value={description}
         onChange={setDescription}

@@ -1,3 +1,4 @@
+import { useMoney } from '@/hooks/useMoney'
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
@@ -8,7 +9,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { StatCard } from '@/components/ui/StatCard'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { listAllTransactions, listCategories } from '@/lib/data'
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate } from '@/lib/format'
 import { computeStats, OTHERS_ID, PERIODS, periodMonths, type PeriodKey, type Slice } from '@/lib/stats'
 import type { Category } from '@/types/db'
 
@@ -31,6 +32,7 @@ function Spinner() {
 }
 
 export function EstadisticasPage() {
+  const { money } = useMoney()
   const [period, setPeriod] = useState<PeriodKey>('6m')
   const [sliceType, setSliceType] = useState<'expense' | 'income'>('expense')
 
@@ -120,7 +122,7 @@ export function EstadisticasPage() {
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               label="Gasto promedio mensual"
-              value={formatMoney(stats.avgMonthlyExpense)}
+              value={money(stats.avgMonthlyExpense)}
               hint={`En ${stats.months.length} mes${stats.months.length === 1 ? '' : 'es'}`}
               icon="M12 5v14M5 12l7 7 7-7"
               delay={60}
@@ -134,10 +136,10 @@ export function EstadisticasPage() {
             />
             <StatCard
               label="Mayor gasto"
-              value={biggest ? formatMoney(biggest.amount) : '—'}
+              value={biggest ? money(biggest.amount) : '—'}
               hint={
                 biggest
-                  ? `${biggest.description || biggestCategory?.name || 'Sin categoría'} · ${formatDate(biggest.occurred_on)}`
+                  ? `${biggest.name || biggest.description || biggestCategory?.name || 'Sin categoría'} · ${formatDate(biggest.occurred_on)}`
                   : 'Sin gastos en el período'
               }
               icon="M3 17l6-6 4 4 8-8M15 7h6v6"
@@ -146,7 +148,7 @@ export function EstadisticasPage() {
             <StatCard
               label="Categoría principal"
               value={topMeta ? topMeta.name : '—'}
-              hint={topExpense && topMeta ? `${formatMoney(topExpense.amount)} · ${percent.format(topExpense.share)} del gasto` : 'Sin gastos en el período'}
+              hint={topExpense && topMeta ? `${money(topExpense.amount)} · ${percent.format(topExpense.share)} del gasto` : 'Sin gastos en el período'}
               icon="M12 3a9 9 0 109 9h-9V3z"
               delay={270}
             />
@@ -199,7 +201,7 @@ export function EstadisticasPage() {
                     <DonutChart
                       data={donutData}
                       centerLabel={sliceType === 'expense' ? 'Gastos' : 'Ingresos'}
-                      centerValue={formatMoney(sliceTotal)}
+                      centerValue={money(sliceTotal)}
                     />
                   </Suspense>
                   <ul className="mt-4 space-y-2">
@@ -209,7 +211,7 @@ export function EstadisticasPage() {
                         <li key={slice.categoryId ?? 'none'} className="flex items-center gap-2.5 text-sm">
                           <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: meta.color }} />
                           <span className="min-w-0 flex-1 truncate text-ink">{meta.name}</span>
-                          <span className="shrink-0 text-muted">{formatMoney(slice.amount)}</span>
+                          <span className="shrink-0 text-muted">{money(slice.amount)}</span>
                           <span className="w-10 shrink-0 text-right font-medium text-heading">
                             {percent.format(slice.share)}
                           </span>
@@ -263,11 +265,11 @@ export function EstadisticasPage() {
                           <p className="text-xs text-muted">
                             {item.change === null
                               ? 'Sin gasto en el período anterior'
-                              : `Antes: ${formatMoney(item.previous)}`}
+                              : `Antes: ${money(item.previous)}`}
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-sm font-semibold text-ink">{formatMoney(item.amount)}</p>
+                          <p className="text-sm font-semibold text-ink">{money(item.amount)}</p>
                           {item.change !== null && (
                             <p
                               className={`text-xs font-medium ${

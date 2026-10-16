@@ -122,6 +122,7 @@ interface TxRow {
   amount: number
   occurred_on: string
   category_id: string | null
+  name: string | null
   description: string | null
 }
 
@@ -131,7 +132,7 @@ async function fetchTransactions(db: SupabaseClient, fromDate: string): Promise<
   for (let start = 0; start < 5000; start += pageSize) {
     const { data, error } = await db
       .from('transactions')
-      .select('type, amount, occurred_on, category_id, description')
+      .select('type, amount, occurred_on, category_id, name, description')
       .gte('occurred_on', fromDate)
       .order('occurred_on', { ascending: false })
       .order('id', { ascending: true })
@@ -144,6 +145,7 @@ async function fetchTransactions(db: SupabaseClient, fromDate: string): Promise<
         amount: Number(r.amount),
         occurred_on: String(r.occurred_on),
         category_id: (r.category_id as string | null) ?? null,
+        name: (r.name as string | null) ?? null,
         description: (r.description as string | null) ?? null,
       })
     }
@@ -238,6 +240,7 @@ async function buildSummary(db: SupabaseClient, today: string) {
       tipo: t.type === 'income' ? 'ingreso' : 'gasto',
       monto: t.amount,
       categoria: nameOf(t.category_id),
+      nombre: sanitize(t.name),
       descripcion: sanitize(t.description),
     })),
   }
