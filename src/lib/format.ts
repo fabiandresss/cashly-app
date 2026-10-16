@@ -35,6 +35,19 @@ export function currentMonth(): string {
   return todayISO().slice(0, 7)
 }
 
+/** Desplaza un mes YYYY-MM en `delta` meses (puede ser negativo). */
+export function shiftMonth(month: string, delta: number): string {
+  const [y, m] = month.split('-').map(Number)
+  const index = (y ?? 0) * 12 + ((m ?? 1) - 1) + delta
+  return `${Math.floor(index / 12)}-${pad((index % 12) + 1)}`
+}
+
+/** "octubre de 2026" para un mes YYYY-MM. */
+export function monthTitle(month: string): string {
+  const [y, m] = month.split('-').map(Number)
+  return new Date(y ?? 2000, (m ?? 1) - 1, 1).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' })
+}
+
 /** Rango [from, to) de fechas ISO para un mes YYYY-MM. */
 export function monthRange(month: string): { from: string; to: string } {
   const [y, m] = month.split('-').map(Number)
