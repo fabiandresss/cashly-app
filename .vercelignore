@@ -1,0 +1,9 @@
+# No se suben a Vercel: documentación local, capturas del README y recursos de Supabase
+docs
+assets
+supabase
+README.md
+SECURITY.md
+.env
+.env.*
+!.env.example

@@ -5,7 +5,7 @@ interface AuthLayoutProps {
   title: string
   subtitle: string
   children: ReactNode
-  footer: ReactNode
+  footer?: ReactNode
 }
 
 const HIGHLIGHTS = [
@@ -54,7 +54,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
           <h1 className="text-3xl font-bold tracking-tight text-heading">{title}</h1>
           <p className="mt-2 text-sm text-muted">{subtitle}</p>
           <div className="mt-8">{children}</div>
-          <div className="mt-8 text-center text-sm text-muted">{footer}</div>
+          {footer && <div className="mt-8 text-center text-sm text-muted">{footer}</div>}
         </div>
       </main>
     </div>

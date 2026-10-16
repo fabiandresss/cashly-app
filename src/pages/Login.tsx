@@ -37,14 +37,6 @@ export function LoginPage() {
     <AuthLayout
       title="Bienvenido de nuevo"
       subtitle="Ingresa a tu cuenta para continuar."
-      footer={
-        <>
-          ¿No tienes cuenta?{' '}
-          <Link to="/registro" className="font-semibold text-link hover:text-link-hover">
-            Crear cuenta
-          </Link>
-        </>
-      }
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         {formError && <Alert tone="error">{formError}</Alert>}
