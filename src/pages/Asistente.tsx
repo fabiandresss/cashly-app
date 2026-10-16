@@ -3,7 +3,7 @@ import { ConversationHistory } from '@/components/features/ConversationHistory'
 import { Alert } from '@/components/ui/Alert'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Icon } from '@/components/ui/Icon'
-import { LogoMark } from '@/components/ui/Logo'
+import { AiAvatar } from '@/components/ui/AiAvatar'
 import { Modal } from '@/components/ui/Modal'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { RichText } from '@/components/ui/RichText'
@@ -33,7 +33,7 @@ const SAVE_WARNING = 'Esta conversación no se pudo guardar en tu historial. Pue
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-2.5" aria-live="polite" aria-label="El asistente está escribiendo">
-      <LogoMark className="h-8 w-8" />
+      <AiAvatar className="h-9 w-9"/>
       <div className="flex gap-1.5 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5 shadow-card">
         {[0, 150, 300].map((delay) => (
           <span
@@ -166,7 +166,7 @@ export function AsistentePage() {
     // El contenedor (AppShell) le da altura fija: la página no se desplaza, solo la conversación.
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-start justify-between gap-4">
-        <PageHeader compact title="Asistente" description="Consulta tus finanzas con inteligencia artificial." />
+        <PageHeader compact title="Cashly AI" description="Tu asistente financiero con inteligencia artificial." />
         <button
           type="button"
           onClick={() => setHistoryOpen(true)}
@@ -186,8 +186,8 @@ export function AsistentePage() {
             <div className="flex min-h-full flex-col justify-end space-y-5">
             {empty && !loading ? (
               <div className="flex flex-1 flex-col items-center justify-center text-center">
-                <LogoMark className="mb-3 h-14 w-14 animate-float shadow-glow" />
-                <h2 className="text-lg font-semibold text-heading">¿En qué te ayudo hoy?</h2>
+                <AiAvatar className="mb-3 h-20 w-20" />
+                <h2 className="text-lg font-semibold text-heading">Hola, soy Cashly AI</h2>
                 <p className="mt-1 max-w-sm text-sm text-muted [@media(max-height:700px)]:hidden">
                   Respondo con tus movimientos y presupuestos reales. Pregúntame lo que quieras sobre tus
                   finanzas.
@@ -215,7 +215,7 @@ export function AsistentePage() {
                   </div>
                 ) : (
                   <div key={index} className="flex items-end gap-2.5">
-                    <LogoMark className="h-8 w-8" />
+                    <AiAvatar className="h-9 w-9" still />
                     <div className="max-w-[85%] break-words rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-ink shadow-card">
                       <RichText text={message.content} />
                     </div>

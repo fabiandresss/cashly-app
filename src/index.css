@@ -32,6 +32,27 @@
   --animate-draw: draw 1.6s ease-out 0.3s both;
   --animate-pop: pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-pop-up: pop-up 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-ai-bob: ai-bob 4.5s ease-in-out infinite;
+  --animate-ai-glow: ai-glow 3.2s ease-in-out infinite;
+  --animate-ai-pulse: ai-pulse 2.6s ease-in-out infinite;
+  --animate-ai-twinkle: ai-twinkle 2.2s ease-in-out infinite;
+
+  @keyframes ai-bob {
+    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+    50% { transform: translateY(-4px) rotate(1.5deg); }
+  }
+  @keyframes ai-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.35), 0 6px 20px rgb(16 185 129 / 0.25); }
+    50% { box-shadow: 0 0 0 10px rgb(16 185 129 / 0), 0 8px 26px rgb(16 185 129 / 0.4); }
+  }
+  @keyframes ai-pulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.18) rotate(12deg); }
+  }
+  @keyframes ai-twinkle {
+    0%, 100% { opacity: 0.25; transform: scale(0.6); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
 
   @keyframes pop {
     from { opacity: 0; transform: translateY(-6px) scale(0.97); }
