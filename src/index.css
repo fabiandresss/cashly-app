@@ -22,8 +22,8 @@
   --color-link: #047857;
   --color-link-hover: #059669;
 
-  --shadow-card: 0 1px 2px rgb(6 78 59 / 0.05), 0 4px 12px rgb(6 78 59 / 0.05);
-  --shadow-lift: 0 2px 4px rgb(6 78 59 / 0.06), 0 12px 28px rgb(6 78 59 / 0.12);
+  --shadow-card: 0 1px 2px rgb(6 78 59 / 0.07), 0 4px 10px rgb(6 78 59 / 0.08), 0 12px 24px -6px rgb(6 78 59 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(6 78 59 / 0.08), 0 14px 32px rgb(6 78 59 / 0.16);
   --shadow-glow: 0 8px 24px rgb(16 185 129 / 0.35);
 
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -76,8 +76,8 @@
   --color-heading: #d1fae5;
   --color-link: #34d399;
   --color-link-hover: #6ee7b7;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 28px rgb(0 0 0 / 0.45);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.45), 0 4px 10px rgb(0 0 0 / 0.30), 0 12px 24px -6px rgb(0 0 0 / 0.40);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 14px 32px rgb(0 0 0 / 0.55);
 }
 
 html,
