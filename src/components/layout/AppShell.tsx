@@ -4,6 +4,7 @@ import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
 import { LogoFull, LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
+import { signOut } from '@/lib/auth'
 import { useAuth } from '@/lib/auth-context'
 import { generateMyRecurring } from '@/lib/data'
 import { useSettings } from '@/lib/settings'
@@ -32,8 +33,41 @@ function PrivacyToggle() {
   )
 }
 
+const LOGOUT = 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9'
+
+function SignOutButton() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleClick() {
+    setLoading(true)
+    setError(null)
+    try {
+      await signOut()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo cerrar la sesión.')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => void handleClick()}
+        disabled={loading}
+        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15 disabled:opacity-60"
+      >
+        <Icon path={LOGOUT} className="h-[18px] w-[18px]" />
+        {loading ? 'Cerrando sesión…' : 'Cerrar sesión'}
+      </button>
+      {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
+    </div>
+  )
+}
+
 export function AppShell() {
-  const { displayName: name, user } = useAuth()
+  const { displayName: name } = useAuth()
   const fixedHeight = useLocation().pathname === '/asistente'
 
   // Antes de mostrar las pantallas se registran los movimientos programados que ya correspondían.
@@ -90,12 +124,8 @@ export function AppShell() {
           ))}
         </nav>
 
-        <div className="relative mt-auto rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 animate-pulse-ring rounded-full bg-brand-400" />
-            <p className="text-sm font-medium">Sesión activa</p>
-          </div>
-          <p className="mt-1 truncate text-xs text-white/90">{user?.email}</p>
+        <div className="relative mt-auto">
+          <SignOutButton />
         </div>
       </aside>
 
