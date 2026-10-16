@@ -9,6 +9,13 @@ function FullScreenSpinner() {
   )
 }
 
+/** Solo acepta rutas internas ("/algo"), nunca "//host" ni URLs absolutas. */
+function safeInternalPath(value: unknown): string {
+  if (typeof value !== 'string') return '/'
+  if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return '/'
+  return value
+}
+
 /** Solo permite el paso con sesión iniciada. */
 export function RequireAuth() {
   const { user, loading } = useAuth()
@@ -23,9 +30,9 @@ export function RequireAuth() {
 export function RedirectIfAuthed() {
   const { user, loading } = useAuth()
   const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from
+  const from = (location.state as { from?: unknown } | null)?.from
 
   if (loading) return <FullScreenSpinner />
-  if (user) return <Navigate to={from ?? '/'} replace />
+  if (user) return <Navigate to={safeInternalPath(from)} replace />
   return <Outlet />
 }
