@@ -27,7 +27,7 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
         <LegendItem color={INCOME_COLOR} label="Ingresos" />
         <LegendItem color={EXPENSE_COLOR} label="Gastos" />
       </div>
-      <div className="h-64 w-full" role="img" aria-label="Gráfico de ingresos y gastos de los últimos 6 meses">
+      <div className="h-64 w-full min-w-0" role="img" aria-label="Gráfico de ingresos y gastos de los últimos 6 meses">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={[...data]} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barGap={4}>
             <CartesianGrid vertical={false} stroke="var(--color-line)" />

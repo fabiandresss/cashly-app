@@ -72,7 +72,7 @@ export function EstadisticasPage() {
     <>
       <PageHeader title="Estadísticas" description="Analiza tus hábitos financieros." />
 
-      <div role="tablist" aria-label="Período" className="mb-6 inline-flex flex-wrap rounded-xl bg-surface p-1 shadow-card ring-1 ring-line">
+      <div role="tablist" aria-label="Período" className="mb-6 grid grid-cols-5 rounded-xl bg-surface p-1 shadow-card ring-1 ring-line sm:inline-flex">
         {PERIODS.map((p) => (
           <button
             key={p.key}
@@ -80,7 +80,7 @@ export function EstadisticasPage() {
             role="tab"
             aria-selected={period === p.key}
             onClick={() => setPeriod(p.key)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            className={`whitespace-nowrap rounded-lg px-1 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
               period === p.key ? 'bg-brand-700 text-white shadow-card' : 'text-muted hover:text-ink'
             }`}
           >

@@ -13,7 +13,7 @@ export function Card({ children, className = '', delay = 0, interactive = false 
   return (
     <div
       style={style}
-      className={`animate-fade-up rounded-2xl border border-line bg-surface p-5 shadow-card ${
+      className={`min-w-0 animate-fade-up rounded-2xl border border-line bg-surface p-4 shadow-card sm:p-5 ${
         interactive
           ? 'transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift'
           : ''

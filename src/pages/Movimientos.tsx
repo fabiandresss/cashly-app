@@ -217,12 +217,12 @@ export function MovimientosPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 sm:mb-0">
         <PageHeader title="Movimientos" description="Registra y gestiona tus ingresos y gastos." />
         <button
           type="button"
           onClick={() => setFormState({ open: true })}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nuevo movimiento
@@ -232,7 +232,7 @@ export function MovimientosPage() {
       <div
         role="tablist"
         aria-label="Secciones"
-        className="mb-6 inline-flex flex-wrap rounded-xl bg-surface p-1 shadow-card ring-1 ring-line"
+        className="mb-6 grid grid-cols-4 rounded-xl bg-surface p-1 shadow-card ring-1 ring-line sm:inline-flex"
       >
         {(
           [
@@ -248,7 +248,7 @@ export function MovimientosPage() {
             role="tab"
             aria-selected={tab === value}
             onClick={() => setTab(value)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            className={`whitespace-nowrap rounded-lg px-1 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
               tab === value ? 'bg-brand-700 text-white shadow-card' : 'text-muted hover:text-ink'
             }`}
           >
@@ -307,21 +307,25 @@ export function MovimientosPage() {
           )}
 
           <Card delay={60}>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Select
-                label="Período"
-                value={filters.period}
-                onChange={(value) => setFilter('period', value as PeriodMode)}
-                options={PERIOD_OPTIONS}
-              />
-              {filters.period === 'month' && (
-                <TextField
-                  label="Mes"
-                  type="month"
-                  name="month"
-                  value={filters.month}
-                  onChange={(value) => value && setFilter('month', value)}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              <div className="col-span-2 sm:col-span-1">
+                <Select
+                  label="Período"
+                  value={filters.period}
+                  onChange={(value) => setFilter('period', value as PeriodMode)}
+                  options={PERIOD_OPTIONS}
                 />
+              </div>
+              {filters.period === 'month' && (
+                <div className="col-span-2 sm:col-span-1">
+                  <TextField
+                    label="Mes"
+                    type="month"
+                    name="month"
+                    value={filters.month}
+                    onChange={(value) => value && setFilter('month', value)}
+                  />
+                </div>
               )}
               {filters.period === 'range' && (
                 <>
@@ -353,7 +357,7 @@ export function MovimientosPage() {
                 onChange={(value) => setFilter('categoryId', value)}
                 options={categoryOptions}
               />
-              <div className="sm:col-span-2">
+              <div className="col-span-2">
                 <TextField
                   label="Buscar por nombre o descripción"
                   name="search"
@@ -468,21 +472,23 @@ export function MovimientosPage() {
                             {t.name || t.description || category?.name || 'Sin categoría'}
                           </p>
                           <p className="truncate text-xs text-muted">
-                            {category?.name ?? 'Sin categoría'} · {formatDate(t.occurred_on)}
+                            {formatDate(t.occurred_on)} · {category?.name ?? 'Sin categoría'}
                             {t.recurring_id ? ' · Programado' : ''}
                           </p>
                           {t.name && t.description && (
                             <p className="truncate text-xs text-muted/80">{t.description}</p>
                           )}
                         </div>
+                        <div className="flex shrink-0 flex-col items-end sm:flex-row sm:items-center">
                         <p
-                          className={`shrink-0 text-sm font-semibold ${
+                          className={`text-sm font-semibold sm:mr-1 ${
                             isIncome ? 'text-link' : 'text-red-600 dark:text-red-400'
                           }`}
                         >
                           {isIncome ? '+' : '−'}
                           {money(t.amount)}
                         </p>
+                        <div className="-mr-1.5 flex sm:mr-0">
                         <button
                           type="button"
                           onClick={() => void saveAsTemplate(t)}
@@ -508,6 +514,8 @@ export function MovimientosPage() {
                         >
                           <Icon path={TRASH} className="h-4 w-4" />
                         </button>
+                        </div>
+                        </div>
                       </li>
                     )
                   })}
