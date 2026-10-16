@@ -35,8 +35,10 @@ const SUMMARY_MONTHS = 6
 const RECENT_COUNT = 15
 const GEMINI_TIMEOUT_MS = 25_000
 
+/** Tamaño máximo del cuerpo de la solicitud (protege contra abuso). */
+const MAX_BODY_CHARS = 20_000
+
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
@@ -506,7 +508,31 @@ async function recordUsage(db: SupabaseClient): Promise<void> {
 
 // ---------- Handler ----------
 
+/**
+ * Origen permitido. Si defines el secreto ALLOWED_ORIGINS (ej: "https://cashly.app,http://localhost:5173")
+ * solo esos sitios pueden llamar a la función desde un navegador. Sin él, se acepta cualquiera
+ * (la función igualmente exige una sesión válida).
+ */
+function allowedOrigin(req: Request): string {
+  const list = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+  if (list.length === 0) return '*'
+  const origin = req.headers.get('Origin') ?? ''
+  return list.includes(origin) ? origin : (list[0] ?? '')
+}
+
 Deno.serve(async (req: Request): Promise<Response> => {
+  const res = await handle(req)
+  res.headers.set('Access-Control-Allow-Origin', allowedOrigin(req))
+  res.headers.set('Vary', 'Origin')
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  res.headers.set('Cache-Control', 'no-store')
+  return res
+})
+
+async function handle(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS_HEADERS })
   if (req.method !== 'POST') return json({ error: 'Método no permitido.' }, 405)
 
@@ -531,7 +557,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   let body: unknown
   try {
-    body = await req.json()
+    const raw = await req.text()
+    if (raw.length > MAX_BODY_CHARS) return json({ error: 'La solicitud es demasiado grande.' }, 413)
+    body = JSON.parse(raw)
   } catch {
     return json({ error: 'Solicitud inválida.' }, 400)
   }
@@ -572,4 +600,4 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
     return json({ error: 'El asistente no está disponible en este momento. Inténtalo de nuevo.' }, 502)
   }
-})
+}
