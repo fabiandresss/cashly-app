@@ -30,3 +30,6 @@ dist-ssr
 
 # Documentación local (no se sube al repositorio)
 docs/
+
+# Vercel
+.vercel

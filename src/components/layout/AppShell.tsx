@@ -90,18 +90,18 @@ export function AppShell() {
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-brand-400/10 blur-3xl" />
 
-        <div className="relative mb-10 px-2 pt-2">
+        <div className="relative mb-6 px-2 pt-1 [@media(max-height:760px)]:mb-4">
           <LogoFull variant="dark" className="h-14" />
         </div>
 
-        <nav aria-label="Principal" className="relative flex flex-col gap-1.5">
+        <nav aria-label="Principal" className="relative -mx-1 flex min-h-0 flex-col gap-1 overflow-y-auto overflow-x-hidden px-1 [@media(max-height:760px)]:gap-0.5">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-200 ${
+                `group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 [@media(max-height:760px)]:py-1.5 ${
                   isActive
                     ? 'bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]'
                     : 'text-white/90 hover:translate-x-1 hover:bg-white/10 hover:text-white'
@@ -124,7 +124,7 @@ export function AppShell() {
           ))}
         </nav>
 
-        <div className="relative mt-auto">
+        <div className="relative mt-auto shrink-0 pt-6 [@media(max-height:760px)]:pt-4">
           <SignOutButton />
         </div>
       </aside>

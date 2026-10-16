@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { RedirectIfAuthed, RequireAuth } from '@/components/layout/RouteGuards'
 import { AuthProvider } from '@/lib/auth-context'
@@ -13,7 +13,6 @@ import { MetasPage } from '@/pages/Metas'
 import { MovimientosPage } from '@/pages/Movimientos'
 import { PresupuestosPage } from '@/pages/Presupuestos'
 import { RecuperarPage } from '@/pages/Recuperar'
-import { RegistroPage } from '@/pages/Registro'
 
 export default function App() {
   return (
@@ -35,9 +34,9 @@ export default function App() {
             </Route>
             <Route element={<RedirectIfAuthed />}>
               <Route path="login" element={<LoginPage />} />
-              <Route path="registro" element={<RegistroPage />} />
               <Route path="recuperar" element={<RecuperarPage />} />
             </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
