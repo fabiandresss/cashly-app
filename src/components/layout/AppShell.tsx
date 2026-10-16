@@ -1,9 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
 import { LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
+import { useSettings } from '@/lib/settings'
 
 export function AppShell() {
+  const { name } = useSettings()
   return (
     <div className="flex h-full">
       <aside className="relative hidden w-72 shrink-0 flex-col overflow-hidden bg-gradient-to-b from-brand-900 via-brand-900 to-brand-950 p-5 text-white md:flex">
@@ -60,6 +63,16 @@ export function AppShell() {
       </aside>
 
       <main className="min-w-0 flex-1 overflow-y-auto pb-28 md:pb-0">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-canvas/80 px-5 py-3 backdrop-blur md:px-10">
+          <div className="flex items-center gap-2.5 md:hidden">
+            <LogoMark className="h-8 w-8 rounded-[10px]" />
+            <span className="text-lg font-semibold tracking-tight text-heading">Cashly</span>
+          </div>
+          <p className="hidden text-sm text-muted md:block">
+            Hola, <span className="font-semibold text-heading">{name}</span>
+          </p>
+          <UserMenu />
+        </div>
         <div className="mx-auto max-w-6xl p-5 md:p-10">
           <Outlet />
         </div>
@@ -76,7 +89,7 @@ export function AppShell() {
             end={item.to === '/'}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
-                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-brand-100/60'
+                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-brand-100/80'
               }`
             }
           >
