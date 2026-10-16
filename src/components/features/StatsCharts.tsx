@@ -36,7 +36,7 @@ export interface DonutDatum {
 export function DonutChart({ data, centerLabel, centerValue }: { data: readonly DonutDatum[]; centerLabel: string; centerValue: string }) {
   const { money } = useMoney()
   return (
-    <div className="relative h-56 w-full" role="img" aria-label={`Distribución por categoría. ${centerLabel}: ${centerValue}`}>
+    <div className="relative h-56 w-full min-w-0" role="img" aria-label={`Distribución por categoría. ${centerLabel}: ${centerValue}`}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -72,7 +72,7 @@ export function DonutChart({ data, centerLabel, centerValue }: { data: readonly 
 export function BalanceChart({ data }: { data: readonly { label: string; balance: number }[] }) {
   const { money, tick } = useMoney()
   return (
-    <div className="h-64 w-full" role="img" aria-label="Evolución del saldo acumulado">
+    <div className="h-64 w-full min-w-0" role="img" aria-label="Evolución del saldo acumulado">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={[...data]} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <defs>
@@ -115,7 +115,7 @@ export function WeekdayChart({ data }: { data: readonly { label: string; total: 
   const { money, tick } = useMoney()
   const max = Math.max(...data.map((d) => d.total), 0)
   return (
-    <div className="h-64 w-full" role="img" aria-label="Gasto total por día de la semana">
+    <div className="h-64 w-full min-w-0" role="img" aria-label="Gasto total por día de la semana">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={[...data]} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--color-line)" />
