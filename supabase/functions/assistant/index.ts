@@ -12,6 +12,22 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 
 const MODEL = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash'
+// Si el modelo principal está saturado o no disponible, se intenta con este.
+const FALLBACK_MODEL = Deno.env.get('GEMINI_FALLBACK_MODEL') ?? 'gemini-3.6-flash'
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504])
+const ATTEMPTS_PER_MODEL = 2
+
+class GeminiHttpError extends Error {
+  status: number
+  constructor(status: number) {
+    super(`gemini_${status}`)
+    this.status = status
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 const MAX_MESSAGES = 12
 const MAX_CHARS = 1000
 const HOURLY_LIMIT = 30
@@ -247,13 +263,18 @@ interface GeminiResult {
   blocked?: boolean
 }
 
-async function askGemini(apiKey: string, summary: unknown, messages: ChatMessage[]): Promise<GeminiResult> {
+async function callModel(
+  model: string,
+  apiKey: string,
+  summary: unknown,
+  messages: ChatMessage[],
+): Promise<GeminiResult> {
   const systemText = `${SYSTEM_RULES}\n\n<datos_financieros>\n${JSON.stringify(summary)}\n</datos_financieros>`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS)
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       signal: controller.signal,
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
@@ -268,8 +289,8 @@ async function askGemini(apiKey: string, summary: unknown, messages: ChatMessage
     })
 
     if (!res.ok) {
-      console.error('Gemini respondió con estado', res.status)
-      throw new Error(`gemini_${res.status}`)
+      console.error('Gemini respondió con estado', res.status, 'modelo', model)
+      throw new GeminiHttpError(res.status)
     }
     const data = (await res.json()) as {
       promptFeedback?: { blockReason?: string }
@@ -284,6 +305,30 @@ async function askGemini(apiKey: string, summary: unknown, messages: ChatMessage
   } finally {
     clearTimeout(timer)
   }
+}
+
+/** Consulta a Gemini con reintentos y un modelo de respaldo ante saturación (503/429/5xx). */
+async function askGemini(apiKey: string, summary: unknown, messages: ChatMessage[]): Promise<GeminiResult> {
+  const models = FALLBACK_MODEL && FALLBACK_MODEL !== MODEL ? [MODEL, FALLBACK_MODEL] : [MODEL]
+  let lastError: unknown = new Error('gemini_unavailable')
+
+  for (const model of models) {
+    for (let attempt = 0; attempt < ATTEMPTS_PER_MODEL; attempt++) {
+      try {
+        return await callModel(model, apiKey, summary, messages)
+      } catch (err) {
+        lastError = err
+        if (err instanceof GeminiHttpError && RETRYABLE_STATUS.has(err.status)) {
+          if (attempt < ATTEMPTS_PER_MODEL - 1) await sleep(800 * (attempt + 1))
+          continue
+        }
+        // Modelo inexistente o sin acceso: se pasa al siguiente modelo.
+        if (err instanceof GeminiHttpError && (err.status === 404 || err.status === 403)) break
+        throw err
+      }
+    }
+  }
+  throw lastError
 }
 
 // ---------- Límite de uso ----------
@@ -352,6 +397,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ reply: result.text })
   } catch (err) {
     console.error('Error del asistente:', err instanceof Error ? err.message : 'desconocido')
+    if (err instanceof GeminiHttpError && (err.status === 503 || err.status === 429)) {
+      return json({ error: 'El modelo de IA está con alta demanda en este momento. Inténtalo en unos segundos.' }, 503)
+    }
     return json({ error: 'El asistente no está disponible en este momento. Inténtalo de nuevo.' }, 502)
   }
 })

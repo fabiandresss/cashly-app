@@ -6,7 +6,7 @@ import { NAV_ITEMS } from '@/lib/navigation'
 import { useAuth } from '@/lib/auth-context'
 
 export function AppShell() {
-  const { displayName: name } = useAuth()
+  const { displayName: name, user } = useAuth()
   const fixedHeight = useLocation().pathname === '/asistente'
   return (
     <div className="flex h-full">
@@ -51,11 +51,9 @@ export function AppShell() {
         <div className="relative mt-auto rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 animate-pulse-ring rounded-full bg-brand-400" />
-            <p className="text-sm font-medium">Modo desarrollo</p>
+            <p className="text-sm font-medium">Sesión activa</p>
           </div>
-          <p className="mt-1 text-xs text-white/90">
-            Backend y autenticación se conectan en la fase 2.
-          </p>
+          <p className="mt-1 truncate text-xs text-white/90">{user?.email}</p>
         </div>
       </aside>
 
