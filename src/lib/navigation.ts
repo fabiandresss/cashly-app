@@ -10,7 +10,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/movimientos', label: 'Movimientos', icon: 'M7 7h13M7 7l3-3M7 7l3 3M17 17H4M17 17l-3-3M17 17l-3 3' },
   { to: '/presupuestos', label: 'Presupuestos', icon: 'M12 3a9 9 0 109 9h-9V3z' },
   { to: '/estadisticas', label: 'Estadísticas', icon: 'M4 20V10M10 20V4M16 20v-8M22 20H2' },
-  { to: '/asistente', label: 'Asistente', icon: 'M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z' },
+  {
+    to: '/asistente',
+    label: 'Cashly AI',
+    icon: 'M10 3l1.9 5.6L17.5 10.5l-5.6 1.9L10 18l-1.9-5.6L2.5 10.5l5.6-1.9zM19 3l.7 2.3L22 6l-2.3.7L19 9l-.7-2.3L16 6l2.3-.7zM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7z',
+  },
   {
     to: '/configuracion',
     label: 'Ajustes',
