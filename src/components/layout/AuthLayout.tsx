@@ -32,7 +32,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
           </h2>
           <ul className="mt-8 space-y-4">
             {HIGHLIGHTS.map((text) => (
-              <li key={text} className="flex items-center gap-3 text-sm text-brand-100/90">
+              <li key={text} className="flex items-center gap-3 text-sm text-white/90">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-500/25 text-brand-300">
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M5 12l5 5L20 7" />
@@ -44,7 +44,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
           </ul>
         </div>
 
-        <p className="relative text-xs text-brand-200/60">© Cashly</p>
+        <p className="relative text-xs text-white/80">© Cashly</p>
       </aside>
 
       <main className="flex items-center justify-center p-6 sm:p-10">

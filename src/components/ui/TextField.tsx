@@ -29,7 +29,7 @@ export function TextField({ label, value, onChange, error, type = 'text', ...res
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={`w-full rounded-xl border bg-surface px-3.5 py-3 text-sm text-ink shadow-sm outline-none transition-all placeholder:text-muted/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 ${
+          className={`w-full rounded-xl border bg-surface px-3.5 py-3 text-sm text-ink shadow-sm outline-none transition-all placeholder:text-muted/75 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 ${
             error ? 'border-red-400' : 'border-line'
           } ${isPassword ? 'pr-11' : ''}`}
           {...rest}
