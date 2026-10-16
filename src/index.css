@@ -18,6 +18,9 @@
   --color-surface: #ffffff;
   --color-canvas: #f3f8f6;
   --color-line: #dfeae5;
+  --color-heading: #064e3b;
+  --color-link: #047857;
+  --color-link-hover: #059669;
 
   --shadow-card: 0 1px 2px rgb(6 78 59 / 0.05), 0 4px 12px rgb(6 78 59 / 0.05);
   --shadow-lift: 0 2px 4px rgb(6 78 59 / 0.06), 0 12px 28px rgb(6 78 59 / 0.12);
@@ -44,6 +47,26 @@
     from { stroke-dashoffset: 600; }
     to { stroke-dashoffset: 0; }
   }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Modo oscuro: se redefinen los tokens semánticos. */
+.dark {
+  color-scheme: dark;
+  --color-brand-50: #0d2a22;
+  --color-brand-100: #12382d;
+  --color-brand-200: #1a4f3f;
+  --color-ink: #e6f4ee;
+  --color-muted: #8fa8a0;
+  --color-surface: #101f1a;
+  --color-canvas: #0a1512;
+  --color-line: #1d332b;
+  --color-heading: #d1fae5;
+  --color-link: #34d399;
+  --color-link-hover: #6ee7b7;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 28px rgb(0 0 0 / 0.45);
 }
 
 html,

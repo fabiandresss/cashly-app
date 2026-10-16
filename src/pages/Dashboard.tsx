@@ -42,9 +42,9 @@ export function DashboardPage() {
 
       <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-2" delay={500}>
-          <h2 className="text-base font-semibold text-brand-900">Evolución financiera</h2>
+          <h2 className="text-base font-semibold text-heading">Evolución financiera</h2>
           <p className="text-xs text-muted">Ingresos y gastos de los últimos meses</p>
-          <div className="relative mt-5 flex h-56 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-brand-50 to-white">
+          <div className="relative mt-5 flex h-56 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-brand-50 to-surface">
             <svg viewBox="0 0 400 120" className="absolute inset-x-0 bottom-0 w-full" aria-hidden="true">
               <defs>
                 <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
@@ -63,20 +63,20 @@ export function DashboardPage() {
                 className="animate-draw"
               />
             </svg>
-            <p className="relative rounded-full bg-white/90 px-4 py-1.5 text-xs font-medium text-brand-800 shadow-card">
+            <p className="relative rounded-full bg-surface/90 px-4 py-1.5 text-xs font-medium text-heading shadow-card">
               El gráfico aparecerá al registrar movimientos
             </p>
           </div>
         </Card>
 
         <Card delay={590}>
-          <h2 className="text-base font-semibold text-brand-900">Últimos movimientos</h2>
+          <h2 className="text-base font-semibold text-heading">Últimos movimientos</h2>
           <p className="text-xs text-muted">Tus transacciones recientes</p>
           <div className="mt-5 flex flex-col items-center rounded-xl border border-dashed border-brand-200 bg-brand-50/50 px-4 py-10 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-link">
               <Icon path="M12 5v14M5 12h14" />
             </span>
-            <p className="mt-3 text-sm font-medium text-brand-900">Aún no hay movimientos</p>
+            <p className="mt-3 text-sm font-medium text-heading">Aún no hay movimientos</p>
             <p className="mt-1 text-xs text-muted">Podrás agregarlos en la fase 3.</p>
           </div>
         </Card>
