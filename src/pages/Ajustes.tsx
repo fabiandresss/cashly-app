@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/Card'
 import { Icon } from '@/components/ui/Icon'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { TextField } from '@/components/ui/TextField'
+import { updateName, validators } from '@/lib/auth'
+import { useAuth } from '@/lib/auth-context'
 import { useSettings, type Theme } from '@/lib/settings'
 
 const SUN = 'M12 16a4 4 0 100-8 4 4 0 000 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'
@@ -16,21 +18,31 @@ const THEMES: { value: Theme; label: string; icon: string }[] = [
 ]
 
 export function AjustesPage() {
-  const { theme, setTheme, name, setName } = useSettings()
-  const [draft, setDraft] = useState(name)
+  const { theme, setTheme } = useSettings()
+  const { displayName, user } = useAuth()
+  const [draft, setDraft] = useState(displayName)
   const [error, setError] = useState<string | undefined>()
+  const [formError, setFormError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (draft.trim().length < 2) {
-      setError('Ingresa un nombre de al menos 2 caracteres.')
-      setSaved(false)
-      return
+    setSaved(false)
+    setFormError(null)
+    const nameError = validators.name(draft)
+    setError(nameError)
+    if (nameError) return
+
+    setLoading(true)
+    try {
+      await updateName(draft.trim())
+      setSaved(true)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'No se pudo actualizar el nombre.')
+    } finally {
+      setLoading(false)
     }
-    setError(undefined)
-    setName(draft)
-    setSaved(true)
   }
 
   return (
@@ -67,11 +79,10 @@ export function AjustesPage() {
 
         <Card delay={190}>
           <h2 className="text-base font-semibold text-heading">Perfil</h2>
-          <p className="mt-0.5 text-xs text-muted">
-            Por ahora el nombre se guarda solo en este dispositivo.
-          </p>
+          <p className="mt-0.5 truncate text-xs text-muted">{user?.email}</p>
           <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-4">
             {saved && <Alert tone="success">Nombre actualizado.</Alert>}
+            {formError && <Alert tone="error">{formError}</Alert>}
             <TextField
               label="Nombre"
               name="name"
@@ -83,7 +94,9 @@ export function AjustesPage() {
               }}
               error={error}
             />
-            <Button type="submit">Guardar cambios</Button>
+            <Button type="submit" loading={loading}>
+              Guardar cambios
+            </Button>
           </form>
         </Card>
       </div>

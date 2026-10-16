@@ -21,6 +21,7 @@ export function RegistroPage() {
   const [errors, setErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [confirmationSent, setConfirmationSent] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -36,7 +37,8 @@ export function RegistroPage() {
 
     setLoading(true)
     try {
-      await signUp({ name: name.trim(), email: email.trim(), password })
+      const result = await signUp({ name: name.trim(), email: email.trim(), password })
+      setConfirmationSent(result.needsConfirmation)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'No se pudo crear la cuenta.')
     } finally {
@@ -59,6 +61,11 @@ export function RegistroPage() {
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         {formError && <Alert tone="error">{formError}</Alert>}
+        {confirmationSent && (
+          <Alert tone="success">
+            Cuenta creada. Revisa tu correo para confirmar tu cuenta y luego inicia sesión.
+          </Alert>
+        )}
         <TextField
           label="Nombre"
           name="name"
