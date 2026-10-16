@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { ConversationHistory } from '@/components/features/ConversationHistory'
+import { ProposalCard, type ProposalStatus } from '@/components/features/ProposalCard'
+import { TransactionForm } from '@/components/features/TransactionForm'
 import { Alert } from '@/components/ui/Alert'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Icon } from '@/components/ui/Icon'
@@ -8,7 +10,8 @@ import { Modal } from '@/components/ui/Modal'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { RichText } from '@/components/ui/RichText'
 import { useAsyncData } from '@/hooks/useAsyncData'
-import { askAssistant, MAX_MESSAGE_CHARS, type ChatMessage } from '@/lib/assistant'
+import { askAssistant, MAX_MESSAGE_CHARS, type ChatMessage, type TransactionProposal } from '@/lib/assistant'
+import { createTransaction, listCategories } from '@/lib/data'
 import {
   addMessage,
   createConversation,
@@ -22,9 +25,16 @@ import {
 const SUGGESTIONS = [
   '¿En qué gasté más este mes?',
   '¿Cómo voy con mis presupuestos?',
-  '¿Dónde puedo ahorrar?',
+  '¿Llego a mi meta de ahorro?',
+  'Anota un gasto de 5 mil en café',
   'Compara mis gastos con el mes anterior',
 ]
+
+interface ProposalState {
+  proposal: TransactionProposal
+  status: ProposalStatus
+  error: string | null
+}
 
 const SEND = 'M22 2L11 13M22 2l-7 20-4-9-9-4z'
 const CLOCK = 'M12 8v4l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
@@ -56,11 +66,16 @@ export function AsistentePage() {
   const [warning, setWarning] = useState<string | null>(null)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [toDelete, setToDelete] = useState<ConversationSummary | null>(null)
+  // Propuestas de movimientos, por posición del mensaje del asistente.
+  const [proposals, setProposals] = useState<Record<number, ProposalState>>({})
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const history = useAsyncData(listConversations, [])
   const conversations = history.data ?? []
+  const categoriesQuery = useAsyncData(listCategories, [])
+  const categories = categoriesQuery.data ?? []
 
   useEffect(() => {
     if (messages.length === 0 && !loading && !error) return
@@ -71,8 +86,11 @@ export function AsistentePage() {
     setLoading(true)
     setError(null)
     try {
-      const reply = await askAssistant(chat)
+      const { reply, proposal } = await askAssistant(chat)
       setMessages([...chat, { role: 'assistant', content: reply }])
+      if (proposal) {
+        setProposals((prev) => ({ ...prev, [chat.length]: { proposal, status: 'pending', error: null } }))
+      }
       if (convId) {
         try {
           await addMessage(convId, 'assistant', reply)
@@ -120,13 +138,46 @@ export function AsistentePage() {
     try {
       const saved = await listMessages(id)
       setMessages(saved)
+      setProposals({})
       setConversationId(id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo cargar la conversación.')
     }
   }
 
+  function patchProposal(index: number, patch: Partial<ProposalState>) {
+    setProposals((prev) => {
+      const current = prev[index]
+      return current ? { ...prev, [index]: { ...current, ...patch } } : prev
+    })
+  }
+
+  async function confirmProposal(index: number) {
+    const entry = proposals[index]
+    if (!entry || entry.status === 'saving') return
+    patchProposal(index, { status: 'saving', error: null })
+    try {
+      const p = entry.proposal
+      await createTransaction({
+        type: p.type,
+        amount: p.amount,
+        occurred_on: p.occurred_on,
+        category_id: p.category_id,
+        name: p.name,
+        description: p.description,
+      })
+      patchProposal(index, { status: 'saved' })
+    } catch (err) {
+      patchProposal(index, {
+        status: 'pending',
+        error: err instanceof Error ? err.message : 'No se pudo registrar el movimiento.',
+      })
+    }
+  }
+
   function reset() {
+    setProposals({})
+    setEditingIndex(null)
     setMessages([])
     setConversationId(null)
     setError(null)
@@ -214,11 +265,24 @@ export function AsistentePage() {
                     </p>
                   </div>
                 ) : (
-                  <div key={index} className="flex items-end gap-2.5">
-                    <AiAvatar className="h-9 w-9" still />
-                    <div className="max-w-[85%] break-words rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-ink shadow-card">
-                      <RichText text={message.content} />
+                  <div key={index} className="space-y-3">
+                    <div className="flex items-end gap-2.5">
+                      <AiAvatar className="h-9 w-9" still />
+                      <div className="max-w-[85%] break-words rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-ink shadow-card">
+                        <RichText text={message.content} />
+                      </div>
                     </div>
+                    {proposals[index] && (
+                      <ProposalCard
+                        proposal={proposals[index].proposal}
+                        status={proposals[index].status}
+                        error={proposals[index].error}
+                        category={categories.find((c) => c.id === proposals[index]?.proposal.category_id)}
+                        onConfirm={() => void confirmProposal(index)}
+                        onEdit={() => setEditingIndex(index)}
+                        onDismiss={() => patchProposal(index, { status: 'dismissed' })}
+                      />
+                    )}
                   </div>
                 ),
               )
@@ -283,6 +347,27 @@ export function AsistentePage() {
           </form>
         </section>
       </div>
+
+      {editingIndex !== null && proposals[editingIndex] && (
+        <Modal title="Editar antes de registrar" onClose={() => setEditingIndex(null)}>
+          <TransactionForm
+            categories={categories}
+            seed={{
+              type: proposals[editingIndex].proposal.type,
+              amount: proposals[editingIndex].proposal.amount,
+              occurred_on: proposals[editingIndex].proposal.occurred_on,
+              category_id: proposals[editingIndex].proposal.category_id,
+              name: proposals[editingIndex].proposal.name,
+              description: proposals[editingIndex].proposal.description,
+            }}
+            onSubmit={async (input) => {
+              await createTransaction(input)
+              patchProposal(editingIndex, { status: 'saved' })
+              setEditingIndex(null)
+            }}
+          />
+        </Modal>
+      )}
 
       {historyOpen && (
         <Modal title="Historial" onClose={() => setHistoryOpen(false)}>

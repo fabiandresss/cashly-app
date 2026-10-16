@@ -18,6 +18,17 @@ export interface Transaction {
   occurred_on: string
   name: string | null
   description: string | null
+  /** Presente cuando el movimiento lo generó un programado. */
+  recurring_id?: string | null
+}
+
+export interface TransactionTemplate {
+  id: string
+  type: TransactionType
+  amount: number
+  category_id: string | null
+  name: string
+  description: string | null
 }
 
 export interface TransactionInput {
@@ -107,9 +118,20 @@ export interface GoalContribution {
   contributed_on: string
 }
 
+export type PeriodMode = 'month' | 'range' | 'all'
+
 export interface TransactionFilters {
-  /** Mes en formato YYYY-MM. */
+  period: PeriodMode
+  /** Mes en formato YYYY-MM (cuando period = 'month'). */
   month: string
+  /** Rango YYYY-MM-DD (cuando period = 'range'); vacío = sin límite. */
+  from: string
+  to: string
   type: TransactionType | 'all'
   categoryId: string | 'all' | 'none'
+  /** Texto a buscar en nombre y descripción. */
+  query: string
+  /** Montos mínimo y máximo como texto con formato; vacío = sin límite. */
+  minAmount: string
+  maxAmount: string
 }
