@@ -1,20 +1,41 @@
+interface LogoFullProps {
+  /**
+   * dark: texto blanco, para fondos oscuros.
+   * light: texto verde profundo, para fondos claros.
+   * auto: cambia según el tema de la app.
+   */
+  variant?: 'dark' | 'light' | 'auto'
+  className?: string
+}
+
+const LOGO_ASPECT = { width: 477, height: 223 }
+
+/** Logo completo de Cashly (ícono + nombre). */
+export function LogoFull({ variant = 'auto', className = 'h-12' }: LogoFullProps) {
+  const dims = { width: LOGO_ASPECT.width, height: LOGO_ASPECT.height }
+  if (variant === 'dark') {
+    return <img src="/brand/logo-dark.png" alt="Cashly" {...dims} className={`w-auto ${className}`} />
+  }
+  if (variant === 'light') {
+    return <img src="/brand/logo-light.png" alt="Cashly" {...dims} className={`w-auto ${className}`} />
+  }
+  return (
+    <>
+      <img src="/brand/logo-light.png" alt="Cashly" {...dims} className={`w-auto dark:hidden ${className}`} />
+      <img src="/brand/logo-dark.png" alt="Cashly" {...dims} className={`hidden w-auto dark:block ${className}`} />
+    </>
+  )
+}
+
 interface LogoMarkProps {
   className?: string
 }
 
-/** Isotipo de Cashly: una "C" geométrica de la que sale una flecha ascendente. */
+/** Ícono de Cashly sobre su cuadrado verde oscuro, igual que el favicon. */
 export function LogoMark({ className = 'h-10 w-10' }: LogoMarkProps) {
   return (
-    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Cashly">
-      <rect width="64" height="64" rx="14" fill="#064e3b" />
-      <path d="M42.7 23A14 14 0 1 0 42.7 41" fill="none" stroke="#ffffff" strokeWidth="8" />
-      <path
-        d="M34 38L50 22M41 22H50V31"
-        fill="none"
-        stroke="#34d399"
-        strokeWidth="5"
-        strokeLinejoin="miter"
-      />
-    </svg>
+    <span className={`flex shrink-0 items-center justify-center rounded-[22%] bg-brand-900 ${className}`}>
+      <img src="/brand/icon.png" alt="Cashly" className="h-[62%] w-auto" />
+    </span>
   )
 }
