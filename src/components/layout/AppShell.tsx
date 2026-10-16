@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
+import { Modal } from '@/components/ui/Modal'
 import { LogoFull, LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
 import { signOut } from '@/lib/auth'
@@ -35,7 +36,7 @@ function PrivacyToggle() {
 
 const LOGOUT = 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9'
 
-function SignOutButton() {
+function SignOutButton({ light = false }: { light?: boolean }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,13 +57,90 @@ function SignOutButton() {
         type="button"
         onClick={() => void handleClick()}
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15 disabled:opacity-60"
+        className={`flex w-full items-center justify-center gap-2.5 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors disabled:opacity-60 ${
+          light
+            ? 'border-line bg-canvas text-ink hover:bg-brand-50'
+            : 'border-white/15 bg-white/10 text-white hover:bg-white/15'
+        }`}
       >
         <Icon path={LOGOUT} className="h-[18px] w-[18px]" />
         {loading ? 'Cerrando sesión…' : 'Cerrar sesión'}
       </button>
-      {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
+      {error && <p className={`mt-2 text-xs ${light ? 'text-red-600' : 'text-red-300'}`}>{error}</p>}
     </div>
+  )
+}
+
+const MORE = 'M5 12h.01M12 12h.01M19 12h.01'
+
+function MobileNav() {
+  const [moreOpen, setMoreOpen] = useState(false)
+  const { pathname } = useLocation()
+  const main = NAV_ITEMS.filter((item) => item.mobile !== false)
+  const more = NAV_ITEMS.filter((item) => item.mobile === false)
+  const moreActive = more.some((item) => pathname.startsWith(item.to))
+
+  return (
+    <>
+      <nav
+        aria-label="Principal"
+        className="fixed inset-x-3 bottom-3 z-10 flex gap-0.5 rounded-2xl border border-white/10 bg-brand-900/95 px-1 py-2 shadow-lift backdrop-blur md:hidden"
+      >
+        {main.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
+            className={({ isActive }) =>
+              `flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
+                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-white/85'
+              }`
+            }
+          >
+            <Icon path={item.icon} />
+            <span className="max-w-full truncate">{item.short ?? item.label}</span>
+          </NavLink>
+        ))}
+        <button
+          type="button"
+          onClick={() => setMoreOpen(true)}
+          aria-haspopup="dialog"
+          className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
+            moreActive ? 'bg-brand-500/20 text-brand-300' : 'text-white/85'
+          }`}
+        >
+          <Icon path={MORE} />
+          Más
+        </button>
+      </nav>
+
+      {moreOpen && (
+        <Modal title="Más opciones" onClose={() => setMoreOpen(false)}>
+          <div className="grid grid-cols-2 gap-3">
+            {more.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setMoreOpen(false)}
+                className={({ isActive }) =>
+                  `flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'border-brand-500 bg-brand-50 text-link'
+                      : 'border-line bg-canvas text-ink hover:bg-brand-50'
+                  }`
+                }
+              >
+                <Icon path={item.icon} className="h-6 w-6" />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+          <div className="mt-4">
+            <SignOutButton light />
+          </div>
+        </Modal>
+      )}
+    </>
   )
 }
 
@@ -130,7 +208,7 @@ export function AppShell() {
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden pb-28 md:pb-0">
-        <div className="z-10 flex shrink-0 items-center justify-between border-b border-line bg-canvas/80 px-5 py-3 backdrop-blur md:px-10">
+        <div className="z-10 flex shrink-0 items-center justify-between border-b border-line bg-canvas/80 px-4 py-2.5 backdrop-blur sm:px-5 md:px-10 md:py-3">
           <div className="flex items-center gap-2.5 md:hidden">
             <LogoMark className="h-8 w-8 rounded-[10px]" />
             <span className="text-lg font-semibold tracking-tight text-heading">Cashly</span>
@@ -145,7 +223,7 @@ export function AppShell() {
         </div>
         {/* El asistente ocupa exactamente el espacio disponible; el resto de páginas se desplaza. */}
         <div className={`min-h-0 flex-1 ${fixedHeight ? 'overflow-hidden' : 'overflow-y-auto'}`}>
-          <div className={`mx-auto max-w-6xl p-5 md:p-10 ${fixedHeight ? 'h-full' : ''}`}>
+          <div className={`mx-auto max-w-6xl p-4 sm:p-5 md:p-10 ${fixedHeight ? 'h-full' : ''}`}>
             {ready ? (
               <Outlet />
             ) : (
@@ -157,26 +235,7 @@ export function AppShell() {
         </div>
       </main>
 
-      <nav
-        aria-label="Principal"
-        className="fixed inset-x-3 bottom-3 z-10 flex gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-brand-900/95 px-2 py-2 shadow-lift backdrop-blur [scrollbar-width:none] md:hidden"
-      >
-        {NAV_ITEMS.filter((item) => item.mobile !== false).map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) =>
-              `flex min-w-[4.4rem] flex-1 shrink-0 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
-                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-white/85'
-              }`
-            }
-          >
-            <Icon path={item.icon} />
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
+      <MobileNav />
     </div>
   )
 }

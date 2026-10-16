@@ -246,12 +246,12 @@ export function AsistentePage() {
   return (
     // El contenedor (AppShell) le da altura fija: la página no se desplaza, solo la conversación.
     <div className="flex h-full flex-col">
-      <div className="flex shrink-0 items-start justify-between gap-4">
+      <div className="flex shrink-0 items-start justify-between gap-3">
         <PageHeader compact title="Cashly AI" description="Tu asistente financiero con inteligencia artificial." />
         <button
           type="button"
           onClick={() => setHistoryOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-brand-50 lg:hidden"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-brand-50 lg:hidden"
         >
           <Icon path={CLOCK} className="h-4 w-4" />
           Historial
@@ -274,12 +274,14 @@ export function AsistentePage() {
                   finanzas.
                 </p>
                 <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
-                  {SUGGESTIONS.map((suggestion) => (
+                  {SUGGESTIONS.map((suggestion, i) => (
                     <button
                       key={suggestion}
                       type="button"
                       onClick={() => void send(suggestion)}
-                      className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50 hover:shadow-lift"
+                      className={`rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50 hover:shadow-lift ${
+                        i >= 3 ? 'hidden sm:inline-flex' : ''
+                      }`}
                     >
                       {suggestion}
                     </button>
@@ -361,7 +363,7 @@ export function AsistentePage() {
                   onChange={(e) => setInput(e.target.value.slice(0, MAX_MESSAGE_CHARS))}
                   onKeyDown={handleKeyDown}
                   rows={2}
-                  placeholder="Escribe tu pregunta… (Enter para enviar, Shift+Enter para salto de línea)"
+                  placeholder="Escribe tu pregunta…"
                   className="min-h-[3rem] flex-1 resize-none bg-transparent px-2 py-2 text-sm text-ink outline-none placeholder:text-muted/75"
                 />
                 <button
@@ -374,7 +376,7 @@ export function AsistentePage() {
                 </button>
               </div>
               <p className="mt-1 px-2 text-right text-xs text-muted">
-                {input.length}/{MAX_MESSAGE_CHARS} · Las respuestas pueden contener errores; verifica tus cifras.
+                {input.length}/{MAX_MESSAGE_CHARS} · Verifica tus cifras<span className="hidden sm:inline">; las respuestas pueden contener errores. Enter envía, Shift+Enter salta de línea</span>.
               </p>
             </div>
           </form>

@@ -1,8 +1,10 @@
 export interface NavItem {
   to: string
   label: string
-  /** false = no aparece en la barra inferior móvil (sigue en el menú lateral y de usuario). */
+  /** false = en móvil no va en la barra inferior: se muestra dentro del panel "Más". */
   mobile?: boolean
+  /** Etiqueta abreviada para la barra inferior móvil. */
+  short?: string
   /** Path del ícono SVG (viewBox 24x24, trazo). */
   icon: string
 }
@@ -10,16 +12,18 @@ export interface NavItem {
 export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/', label: 'Dashboard', icon: 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10' },
   { to: '/movimientos', label: 'Movimientos', icon: 'M7 7h13M7 7l3-3M7 7l3 3M17 17H4M17 17l-3-3M17 17l-3 3' },
-  { to: '/presupuestos', label: 'Presupuestos', icon: 'M12 3a9 9 0 109 9h-9V3z' },
-  { to: '/estadisticas', label: 'Estadísticas', icon: 'M4 20V10M10 20V4M16 20v-8M22 20H2' },
+  { to: '/presupuestos', label: 'Presupuestos', short: 'Presup.', icon: 'M12 3a9 9 0 109 9h-9V3z' },
+  { to: '/estadisticas', label: 'Estadísticas', mobile: false, icon: 'M4 20V10M10 20V4M16 20v-8M22 20H2' },
   {
     to: '/deudas',
     label: 'Deudas',
+    mobile: false,
     icon: 'M3 6h18v12H3zM3 10h18M7 15h4M16 15h1',
   },
   {
     to: '/metas',
     label: 'Metas',
+    mobile: false,
     icon: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 17a5 5 0 100-10 5 5 0 000 10zM12 13a1 1 0 100-2 1 1 0 000 2z',
   },
   {
