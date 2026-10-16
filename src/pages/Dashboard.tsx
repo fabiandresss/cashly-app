@@ -16,11 +16,11 @@ export function DashboardPage() {
       <section className="relative mb-8 animate-fade-up overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 p-7 text-white shadow-lift md:p-10">
         <div className="pointer-events-none absolute -right-10 -top-16 h-64 w-64 rounded-full bg-brand-300/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 right-32 h-56 w-56 rounded-full bg-brand-400/20 blur-3xl" />
-        <p className="relative text-sm font-medium text-brand-100">Bienvenido a Cashly</p>
+        <p className="relative text-sm font-medium text-white">Bienvenido a Cashly</p>
         <h1 className="relative mt-2 max-w-xl text-3xl font-bold tracking-tight md:text-4xl">
           Tu dinero, claro y bajo control
         </h1>
-        <p className="relative mt-3 max-w-lg text-sm text-brand-100/90">
+        <p className="relative mt-3 max-w-lg text-sm text-white/90">
           Cuando registres tus movimientos verás aquí tu saldo, tus gastos y tu evolución.
         </p>
       </section>

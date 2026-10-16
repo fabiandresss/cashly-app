@@ -17,7 +17,7 @@ export function AppShell() {
           <LogoMark className="h-10 w-10 ring-1 ring-white/15 rounded-[14px]" />
           <div>
             <p className="text-xl font-semibold leading-none tracking-tight">Cashly</p>
-            <p className="mt-1 text-xs text-brand-200/70">Finanzas personales</p>
+            <p className="mt-1 text-xs text-white/90">Finanzas personales</p>
           </div>
         </div>
 
@@ -31,7 +31,7 @@ export function AppShell() {
                 `group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]'
-                    : 'text-brand-100/70 hover:translate-x-1 hover:bg-white/5 hover:text-white'
+                    : 'text-white/90 hover:translate-x-1 hover:bg-white/10 hover:text-white'
                 }`
               }
             >
@@ -39,7 +39,7 @@ export function AppShell() {
                 <>
                   <span
                     className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-                      isActive ? 'bg-brand-500 text-white shadow-glow' : 'bg-white/5 group-hover:bg-white/10'
+                      isActive ? 'bg-brand-500 text-white shadow-glow' : 'bg-white/10 group-hover:bg-white/15'
                     }`}
                   >
                     <Icon path={item.icon} className="h-[18px] w-[18px]" />
@@ -56,7 +56,7 @@ export function AppShell() {
             <span className="h-2 w-2 animate-pulse-ring rounded-full bg-brand-400" />
             <p className="text-sm font-medium">Modo desarrollo</p>
           </div>
-          <p className="mt-1 text-xs text-brand-100/70">
+          <p className="mt-1 text-xs text-white/90">
             Backend y autenticación se conectan en la fase 2.
           </p>
         </div>
@@ -89,7 +89,7 @@ export function AppShell() {
             end={item.to === '/'}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
-                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-brand-100/80'
+                isActive ? 'bg-brand-500/20 text-brand-300' : 'text-white/85'
               }`
             }
           >
