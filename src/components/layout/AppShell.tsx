@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
-import { LogoMark } from '@/components/ui/Logo'
+import { LogoFull, LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
 import { useAuth } from '@/lib/auth-context'
 
@@ -13,12 +13,8 @@ export function AppShell() {
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-brand-400/10 blur-3xl" />
 
-        <div className="relative mb-10 flex items-center gap-3 px-2 pt-2">
-          <LogoMark className="h-10 w-10 ring-1 ring-white/15 rounded-[14px]" />
-          <div>
-            <p className="text-xl font-semibold leading-none tracking-tight">Cashly</p>
-            <p className="mt-1 text-xs text-white/90">Finanzas personales</p>
-          </div>
+        <div className="relative mb-10 px-2 pt-2">
+          <LogoFull variant="dark" className="h-14" />
         </div>
 
         <nav aria-label="Principal" className="relative flex flex-col gap-1.5">
