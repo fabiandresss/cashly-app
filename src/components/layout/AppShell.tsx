@@ -159,7 +159,7 @@ export function AppShell() {
 
       <nav
         aria-label="Principal"
-        className="fixed inset-x-3 bottom-3 z-10 flex justify-around rounded-2xl border border-white/10 bg-brand-900/95 px-2 py-2 shadow-lift backdrop-blur md:hidden"
+        className="fixed inset-x-3 bottom-3 z-10 flex gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-brand-900/95 px-2 py-2 shadow-lift backdrop-blur [scrollbar-width:none] md:hidden"
       >
         {NAV_ITEMS.filter((item) => item.mobile !== false).map((item) => (
           <NavLink
@@ -167,7 +167,7 @@ export function AppShell() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
+              `flex min-w-[4.4rem] flex-1 shrink-0 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
                 isActive ? 'bg-brand-500/20 text-brand-300' : 'text-white/85'
               }`
             }

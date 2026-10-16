@@ -6,6 +6,7 @@ import { SettingsProvider } from '@/lib/settings'
 import { AjustesPage } from '@/pages/Ajustes'
 import { AsistentePage } from '@/pages/Asistente'
 import { DashboardPage } from '@/pages/Dashboard'
+import { DeudasPage } from '@/pages/Deudas'
 import { EstadisticasPage } from '@/pages/Estadisticas'
 import { LoginPage } from '@/pages/Login'
 import { MetasPage } from '@/pages/Metas'
@@ -26,6 +27,7 @@ export default function App() {
                 <Route path="movimientos" element={<MovimientosPage />} />
                 <Route path="presupuestos" element={<PresupuestosPage />} />
                 <Route path="estadisticas" element={<EstadisticasPage />} />
+                <Route path="deudas" element={<DeudasPage />} />
                 <Route path="metas" element={<MetasPage />} />
                 <Route path="asistente" element={<AsistentePage />} />
                 <Route path="configuracion" element={<AjustesPage />} />

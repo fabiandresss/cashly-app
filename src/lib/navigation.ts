@@ -13,6 +13,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/presupuestos', label: 'Presupuestos', icon: 'M12 3a9 9 0 109 9h-9V3z' },
   { to: '/estadisticas', label: 'Estadísticas', icon: 'M4 20V10M10 20V4M16 20v-8M22 20H2' },
   {
+    to: '/deudas',
+    label: 'Deudas',
+    icon: 'M3 6h18v12H3zM3 10h18M7 15h4M16 15h1',
+  },
+  {
     to: '/metas',
     label: 'Metas',
     icon: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 17a5 5 0 100-10 5 5 0 000 10zM12 13a1 1 0 100-2 1 1 0 000 2z',
