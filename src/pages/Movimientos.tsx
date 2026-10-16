@@ -8,7 +8,9 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Icon } from '@/components/ui/Icon'
 import { Modal } from '@/components/ui/Modal'
 import { PageHeader } from '@/components/ui/PageHeader'
-import { Select } from '@/components/ui/Select'
+import { CategoryBadge } from '@/components/ui/CategoryBadge'
+import { Select, type SelectOption } from '@/components/ui/Select'
+import { iconPath } from '@/lib/categoryIcons'
 import { StatCard } from '@/components/ui/StatCard'
 import { TextField } from '@/components/ui/TextField'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -69,12 +71,12 @@ export function MovimientosPage() {
     return { income, expense, balance: income - expense }
   }, [transactions])
 
-  const categoryOptions = [
-    { value: 'all', label: 'Todas' },
-    { value: 'none', label: 'Sin categoría' },
+  const categoryOptions: SelectOption[] = [
+    { value: 'all', label: 'Todas', icon: iconPath('star'), color: '#10b981' },
+    { value: 'none', label: 'Sin categoría', icon: iconPath('tag'), color: '#64748b' },
     ...categories
       .filter((c) => filters.type === 'all' || c.type === filters.type)
-      .map((c) => ({ value: c.id, label: c.name })),
+      .map((c) => ({ value: c.id, label: c.name, icon: iconPath(c.icon), color: c.color })),
   ]
 
   function setFilter<K extends keyof TransactionFilters>(key: K, value: TransactionFilters[K]) {
@@ -212,11 +214,7 @@ export function MovimientosPage() {
                   const isIncome = t.type === 'income'
                   return (
                     <li key={t.id} className="flex items-center gap-3 py-3">
-                      <span
-                        className="h-10 w-10 shrink-0 rounded-xl"
-                        style={{ backgroundColor: category?.color ?? '#64748b' }}
-                        aria-hidden="true"
-                      />
+                      <CategoryBadge icon={category?.icon} color={category?.color} />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-ink">
                           {t.description || category?.name || 'Sin categoría'}

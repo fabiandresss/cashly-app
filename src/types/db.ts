@@ -5,6 +5,8 @@ export interface Category {
   name: string
   type: TransactionType
   color: string
+  /** Clave del ícono (ver lib/categoryIcons). */
+  icon: string
 }
 
 export interface Transaction {
@@ -29,6 +31,7 @@ export interface CategoryInput {
   name: string
   type: TransactionType
   color: string
+  icon: string
 }
 
 export interface TransactionFilters {

@@ -45,17 +45,32 @@ export function monthRange(month: string): { from: string; to: string } {
   return { from: `${year}-${pad(mon)}-01`, to: `${nextYear}-${pad(nextMonth)}-01` }
 }
 
-/** Convierte texto del usuario ("1.250,50" o "1250.5") a número, o null si no es válido. */
+/**
+ * Da formato es-CL a un monto mientras se escribe: "1400000" → "1.400.000".
+ * Solo conserva dígitos y una coma decimal (máximo 2 decimales).
+ */
+export function formatMoneyInput(raw: string): string {
+  const cleaned = raw.replace(/[^\d,]/g, '')
+  const commaIndex = cleaned.indexOf(',')
+  const hasComma = commaIndex !== -1
+  const integerRaw = (hasComma ? cleaned.slice(0, commaIndex) : cleaned).replace(/^0+(?=\d)/, '').slice(0, 12)
+  const decimals = hasComma ? cleaned.slice(commaIndex + 1).replace(/,/g, '').slice(0, 2) : ''
+  const integer = integerRaw.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return hasComma ? `${integer || '0'},${decimals}` : integer
+}
+
+/** Número → texto editable con formato es-CL (sin símbolo de moneda). */
+export function amountToInput(value: number): string {
+  const [integer = '0', decimals] = value.toFixed(2).split('.')
+  const trimmed = decimals && decimals !== '00' ? `${integer},${decimals.replace(/0$/, '')}` : integer
+  return formatMoneyInput(trimmed)
+}
+
+/** Convierte el texto con formato es-CL ("1.250,50") a número, o null si no es válido. */
 export function parseAmount(text: string): number | null {
-  const cleaned = text.trim().replace(/\s/g, '')
+  const cleaned = text.trim().replace(/\s/g, '').replace(/\./g, '').replace(',', '.')
   if (!cleaned) return null
-  let normalized = cleaned
-  if (cleaned.includes(',')) {
-    normalized = cleaned.replace(/\./g, '').replace(',', '.')
-  } else if ((cleaned.match(/\./g) ?? []).length > 1) {
-    normalized = cleaned.replace(/\./g, '')
-  }
-  const value = Number(normalized)
+  const value = Number(cleaned)
   if (!Number.isFinite(value)) return null
   return Math.round(value * 100) / 100
 }
