@@ -170,12 +170,12 @@ export function PresupuestosPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 sm:mb-0">
         <PageHeader title="Presupuestos" description="Define límites de gasto y sigue su cumplimiento." />
         <button
           type="button"
           onClick={() => setFormState({ open: true })}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nuevo presupuesto
@@ -183,7 +183,7 @@ export function PresupuestosPage() {
       </div>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="inline-flex items-center rounded-xl bg-surface p-1 shadow-card ring-1 ring-line">
+        <div className="flex w-full items-center rounded-xl bg-surface p-1 shadow-card ring-1 ring-line sm:inline-flex sm:w-auto">
           <button
             type="button"
             onClick={() => setMonth((m) => shiftMonth(m, -1))}
@@ -192,7 +192,7 @@ export function PresupuestosPage() {
           >
             <Icon path={CHEVRON_LEFT} className="h-5 w-5" />
           </button>
-          <span className="min-w-40 px-2 text-center text-sm font-semibold text-heading first-letter:uppercase">
+          <span className="min-w-0 flex-1 px-2 text-center sm:min-w-40 sm:flex-none text-sm font-semibold text-heading first-letter:uppercase">
             {monthTitle(month)}
           </span>
           <button
@@ -217,7 +217,7 @@ export function PresupuestosPage() {
           type="button"
           onClick={handleCopy}
           disabled={copying}
-          className="ml-auto rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
+          className="w-full rounded-xl border border-line bg-surface px-4 py-2.5 sm:ml-auto sm:w-auto text-sm font-semibold text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
         >
           {copying ? 'Copiando…' : 'Copiar del mes anterior'}
         </button>

@@ -251,12 +251,12 @@ export function DeudasPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 sm:mb-0">
         <PageHeader title="Deudas" description="Registra lo que debes y págalo cuando corresponda." />
         <button
           type="button"
           onClick={() => setForm({ open: true })}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nueva deuda

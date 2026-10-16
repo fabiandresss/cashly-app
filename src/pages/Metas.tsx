@@ -126,13 +126,13 @@ export function MetasPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 sm:mb-0">
         <PageHeader title="Metas de ahorro" description="Define objetivos y sigue cuánto llevas ahorrado." />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full gap-2 sm:w-auto">
           <button
             type="button"
             onClick={() => setSimulating({ open: true })}
-            className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-brand-50"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink shadow-card sm:flex-none transition-colors hover:bg-brand-50"
           >
             <Icon path={CALC} className="h-4 w-4" />
             Simulador
@@ -140,7 +140,7 @@ export function MetasPage() {
           <button
             type="button"
             onClick={() => setForm({ open: true })}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99]"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:flex-none"
           >
             <Icon path={PLUS} className="h-4 w-4" />
             Nueva meta
