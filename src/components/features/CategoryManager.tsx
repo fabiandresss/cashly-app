@@ -7,6 +7,8 @@ import { Icon } from '@/components/ui/Icon'
 import { TextField } from '@/components/ui/TextField'
 import { TypeToggle } from '@/components/ui/TypeToggle'
 import { createCategory, deleteCategory, updateCategory } from '@/lib/data'
+import { CategoryBadge } from '@/components/ui/CategoryBadge'
+import { CATEGORY_ICONS, ICON_KEYS, iconPath } from '@/lib/categoryIcons'
 import type { Category, TransactionType } from '@/types/db'
 
 const PALETTE = ['#10b981', '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#64748b']
@@ -35,6 +37,41 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (color: str
   )
 }
 
+function IconPicker({
+  value,
+  color,
+  onChange,
+}: {
+  value: string
+  color: string
+  onChange: (icon: string) => void
+}) {
+  return (
+    <div role="radiogroup" aria-label="Ícono" className="grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6">
+      {ICON_KEYS.map((key) => {
+        const active = value === key
+        return (
+          <button
+            key={key}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={CATEGORY_ICONS[key]?.label ?? key}
+            title={CATEGORY_ICONS[key]?.label ?? key}
+            onClick={() => onChange(key)}
+            style={active ? { backgroundColor: color, color: '#fff' } : undefined}
+            className={`flex h-10 items-center justify-center rounded-xl border transition-all ${
+              active ? 'border-transparent shadow-card' : 'border-line text-muted hover:border-brand-200 hover:text-ink'
+            }`}
+          >
+            <Icon path={iconPath(key)} className="h-5 w-5" />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 interface CategoryManagerProps {
   categories: readonly Category[]
   onChanged: () => void
@@ -44,6 +81,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
   const [name, setName] = useState('')
   const [type, setType] = useState<TransactionType>('expense')
   const [color, setColor] = useState(PALETTE[0] ?? '#10b981')
+  const [icon, setIcon] = useState('tag')
   const [nameError, setNameError] = useState<string | undefined>()
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -51,6 +89,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
   const [editing, setEditing] = useState<Category | null>(null)
   const [editName, setEditName] = useState('')
   const [editColor, setEditColor] = useState('')
+  const [editIcon, setEditIcon] = useState('tag')
   const [editError, setEditError] = useState<string | null>(null)
 
   const [toDelete, setToDelete] = useState<Category | null>(null)
@@ -66,8 +105,9 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
     setNameError(undefined)
     setSaving(true)
     try {
-      await createCategory({ name: trimmed, type, color })
+      await createCategory({ name: trimmed, type, color, icon })
       setName('')
+      setIcon('tag')
       onChanged()
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'No se pudo crear la categoría.')
@@ -80,6 +120,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
     setEditing(category)
     setEditName(category.name)
     setEditColor(category.color)
+    setEditIcon(category.icon)
     setEditError(null)
   }
 
@@ -91,7 +132,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
       return
     }
     try {
-      await updateCategory(editing.id, { name: trimmed, color: editColor })
+      await updateCategory(editing.id, { name: trimmed, color: editColor, icon: editIcon })
       setEditing(null)
       onChanged()
     } catch (err) {
@@ -124,6 +165,10 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
             <p className="mb-1.5 text-sm font-medium text-heading">Color</p>
             <ColorPicker value={color} onChange={setColor} />
           </div>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-heading">Ícono</p>
+            <IconPicker value={icon} color={color} onChange={setIcon} />
+          </div>
           <Button type="submit" loading={saving}>
             Crear categoría
           </Button>
@@ -155,6 +200,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             onChange={setEditName}
                           />
                           <ColorPicker value={editColor} onChange={setEditColor} />
+                          <IconPicker value={editIcon} color={editColor} onChange={setEditIcon} />
                           <div className="flex gap-2">
                             <button
                               type="button"
@@ -174,7 +220,12 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                         </div>
                       ) : (
                         <div className="flex items-center gap-3">
-                          <span className="h-3.5 w-3.5 shrink-0 rounded-full" style={{ backgroundColor: category.color }} />
+                          <CategoryBadge
+                            icon={category.icon}
+                            color={category.color}
+                            className="h-9 w-9"
+                            iconClassName="h-[18px] w-[18px]"
+                          />
                           <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{category.name}</span>
                           <button
                             type="button"

@@ -1,3 +1,4 @@
+import { resolveIcon } from '@/lib/categoryIcons'
 import { monthRange } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type {
@@ -27,18 +28,25 @@ function fail(error: { code?: string; message?: string }): never {
   throw new Error(known ?? 'No se pudo completar la operación. Inténtalo de nuevo.')
 }
 
-const CATEGORY_COLUMNS = 'id, name, type, color'
 const TRANSACTION_COLUMNS = 'id, category_id, type, amount, occurred_on, description'
 
 // ---------- Categorías ----------
 
 export async function listCategories(): Promise<Category[]> {
-  const { data, error } = await db()
-    .from('categories')
-    .select(CATEGORY_COLUMNS)
-    .order('name', { ascending: true })
+  // select('*') tolera que la columna `icon` aún no exista (migración 0002 pendiente).
+  const { data, error } = await db().from('categories').select('*').order('name', { ascending: true })
   if (error) fail(error)
-  return (data ?? []) as Category[]
+  return (data ?? []).map((row) => {
+    const r = row as Record<string, unknown>
+    const name = String(r.name)
+    return {
+      id: String(r.id),
+      name,
+      type: r.type as Category['type'],
+      color: String(r.color),
+      icon: resolveIcon(name, r.icon),
+    }
+  })
 }
 
 export async function createCategory(input: CategoryInput): Promise<void> {
@@ -46,7 +54,10 @@ export async function createCategory(input: CategoryInput): Promise<void> {
   if (error) fail(error)
 }
 
-export async function updateCategory(id: string, input: Pick<CategoryInput, 'name' | 'color'>): Promise<void> {
+export async function updateCategory(
+  id: string,
+  input: Pick<CategoryInput, 'name' | 'color' | 'icon'>,
+): Promise<void> {
   const { error } = await db().from('categories').update(input).eq('id', id)
   if (error) fail(error)
 }
@@ -80,6 +91,28 @@ export async function listTransactions(filters: TransactionFilters): Promise<Tra
   const { data, error } = await query
   if (error) fail(error)
   return (data ?? []).map((row) => normalize(row as Record<string, unknown>))
+}
+
+/** Trae todos los movimientos paginando (PostgREST limita 1000 filas por consulta). */
+export async function listAllTransactions(): Promise<Transaction[]> {
+  const pageSize = 1000
+  const maxRows = 20000
+  const rows: Transaction[] = []
+
+  for (let from = 0; from < maxRows; from += pageSize) {
+    const { data, error } = await db()
+      .from('transactions')
+      .select(TRANSACTION_COLUMNS)
+      .order('occurred_on', { ascending: false })
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: true })
+      .range(from, from + pageSize - 1)
+    if (error) fail(error)
+    const page = data ?? []
+    rows.push(...page.map((row) => normalize(row as Record<string, unknown>)))
+    if (page.length < pageSize) break
+  }
+  return rows
 }
 
 export async function createTransaction(input: TransactionInput): Promise<void> {

@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
-import { Select } from '@/components/ui/Select'
+import { MoneyField } from '@/components/ui/MoneyField'
+import { Select, type SelectOption } from '@/components/ui/Select'
 import { TextField } from '@/components/ui/TextField'
 import { TypeToggle } from '@/components/ui/TypeToggle'
-import { parseAmount, todayISO } from '@/lib/format'
+import { iconPath } from '@/lib/categoryIcons'
+import { amountToInput, parseAmount, todayISO } from '@/lib/format'
 import type { Category, Transaction, TransactionInput, TransactionType } from '@/types/db'
 
 interface TransactionFormProps {
@@ -23,7 +25,7 @@ const NO_CATEGORY = 'none'
 
 export function TransactionForm({ categories, initial, onSubmit }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>(initial?.type ?? 'expense')
-  const [amount, setAmount] = useState(initial ? String(initial.amount) : '')
+  const [amount, setAmount] = useState(initial ? amountToInput(initial.amount) : '')
   const [date, setDate] = useState(initial?.occurred_on ?? todayISO())
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? NO_CATEGORY)
   const [description, setDescription] = useState(initial?.description ?? '')
@@ -32,9 +34,9 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
   const [loading, setLoading] = useState(false)
 
   const available = categories.filter((c) => c.type === type)
-  const options = [
-    { value: NO_CATEGORY, label: 'Sin categoría' },
-    ...available.map((c) => ({ value: c.id, label: c.name })),
+  const options: SelectOption[] = [
+    { value: NO_CATEGORY, label: 'Sin categoría', icon: iconPath('tag'), color: '#64748b' },
+    ...available.map((c) => ({ value: c.id, label: c.name, icon: iconPath(c.icon), color: c.color })),
   ]
 
   function changeType(next: TransactionType) {
@@ -75,15 +77,7 @@ export function TransactionForm({ categories, initial, onSubmit }: TransactionFo
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {formError && <Alert tone="error">{formError}</Alert>}
       <TypeToggle value={type} onChange={changeType} />
-      <TextField
-        label="Monto"
-        name="amount"
-        inputMode="decimal"
-        placeholder="0"
-        value={amount}
-        onChange={setAmount}
-        error={errors.amount}
-      />
+      <MoneyField label="Monto" name="amount" value={amount} onChange={setAmount} error={errors.amount} />
       <TextField
         label="Fecha"
         name="date"
