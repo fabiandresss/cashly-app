@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
 import { LogoFull, LogoMark } from '@/components/ui/Logo'
@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context'
 
 export function AppShell() {
   const { displayName: name } = useAuth()
+  const fixedHeight = useLocation().pathname === '/asistente'
   return (
     <div className="flex h-full">
       <aside className="relative hidden w-72 shrink-0 flex-col overflow-hidden bg-gradient-to-b from-brand-900 via-brand-900 to-brand-950 p-5 text-white md:flex">
@@ -58,8 +59,8 @@ export function AppShell() {
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 overflow-y-auto pb-28 md:pb-0">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-canvas/80 px-5 py-3 backdrop-blur md:px-10">
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden pb-28 md:pb-0">
+        <div className="z-10 flex shrink-0 items-center justify-between border-b border-line bg-canvas/80 px-5 py-3 backdrop-blur md:px-10">
           <div className="flex items-center gap-2.5 md:hidden">
             <LogoMark className="h-8 w-8 rounded-[10px]" />
             <span className="text-lg font-semibold tracking-tight text-heading">Cashly</span>
@@ -69,8 +70,11 @@ export function AppShell() {
           </p>
           <UserMenu />
         </div>
-        <div className="mx-auto max-w-6xl p-5 md:p-10">
-          <Outlet />
+        {/* El asistente ocupa exactamente el espacio disponible; el resto de páginas se desplaza. */}
+        <div className={`min-h-0 flex-1 ${fixedHeight ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+          <div className={`mx-auto max-w-6xl p-5 md:p-10 ${fixedHeight ? 'h-full' : ''}`}>
+            <Outlet />
+          </div>
         </div>
       </main>
 
