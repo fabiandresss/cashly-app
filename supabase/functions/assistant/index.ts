@@ -16,6 +16,8 @@ const MODEL = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash'
 const FALLBACK_MODEL = Deno.env.get('GEMINI_FALLBACK_MODEL') ?? 'gemini-3.6-flash'
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504])
 const ATTEMPTS_PER_MODEL = 2
+/** Marca interna: el modelo no respondió a tiempo. */
+const TIMEOUT_STATUS = 599
 
 class GeminiHttpError extends Error {
   status: number
@@ -33,7 +35,7 @@ const MAX_CHARS = 1000
 const HOURLY_LIMIT = 30
 const SUMMARY_MONTHS = 6
 const RECENT_COUNT = 15
-const GEMINI_TIMEOUT_MS = 25_000
+const GEMINI_TIMEOUT_MS = 18_000
 
 /** Tamaño máximo del cuerpo de la solicitud (protege contra abuso). */
 const MAX_BODY_CHARS = 20_000
@@ -373,20 +375,27 @@ async function callModel(
   const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS)
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemText }] },
-        contents: messages.map((m) => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }],
-        })),
-        tools: TOOLS,
-        generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
-      }),
-    })
+    let res: Response
+    try {
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemText }] },
+          contents: messages.map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+          })),
+          tools: TOOLS,
+          generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+        }),
+      })
+    } catch (err) {
+      // Sin respuesta a tiempo (o error de red): se cuenta como fallo de este modelo.
+      console.error('Gemini sin respuesta, modelo', model, err instanceof Error ? err.name : 'desconocido')
+      throw new GeminiHttpError(TIMEOUT_STATUS)
+    }
 
     if (!res.ok) {
       console.error('Gemini respondió con estado', res.status, 'modelo', model)
@@ -429,8 +438,8 @@ async function askGemini(apiKey: string, summary: unknown, messages: ChatMessage
           if (attempt < ATTEMPTS_PER_MODEL - 1) await sleep(800 * (attempt + 1))
           continue
         }
-        // Modelo inexistente o sin acceso: se pasa al siguiente modelo.
-        if (err instanceof GeminiHttpError && (err.status === 404 || err.status === 403)) break
+        // Sin respuesta a tiempo, modelo inexistente o sin acceso (u otro rechazo): se prueba el siguiente.
+        if (err instanceof GeminiHttpError) break
         throw err
       }
     }
