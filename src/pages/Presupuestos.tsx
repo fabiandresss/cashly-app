@@ -192,7 +192,7 @@ export function PresupuestosPage() {
           >
             <Icon path={CHEVRON_LEFT} className="h-5 w-5" />
           </button>
-          <span className="min-w-40 px-2 text-center text-sm font-semibold capitalize text-heading">
+          <span className="min-w-40 px-2 text-center text-sm font-semibold text-heading first-letter:uppercase">
             {monthTitle(month)}
           </span>
           <button

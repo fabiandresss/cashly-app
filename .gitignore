@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Documentación local (no se sube al repositorio)
+docs/

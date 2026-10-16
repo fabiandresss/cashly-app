@@ -92,7 +92,7 @@ export function computeInsights(
       kind: 'anomaly',
       severity: 'warning',
       title: `Gasto inusual: ${labelOf(t, categoryName)}`,
-      detail: `${fmt(t.amount)} en ${categoryName(t.category_id)}, cuando lo habitual es ${fmt(avg)}.`,
+      detail: `${fmt(t.amount)} en ${categoryName(t.category_id)}, cuando lo habitual es ${fmt(Math.round(avg))}.`,
       amount: t.amount,
     })
   }
@@ -153,7 +153,7 @@ export function computeInsights(
       kind: 'subscription',
       severity: 'info',
       title: `Posible suscripción: ${g.label}`,
-      detail: `Se repite hace ${g.months.size} meses por unos ${fmt(avg)}. Puedes programarlo en Movimientos → Programados.`,
+      detail: `Se repite hace ${g.months.size} meses por unos ${fmt(Math.round(avg))}. Puedes programarlo en Movimientos → Programados.`,
       amount: avg,
     })
     if (insights.filter((i) => i.kind === 'subscription').length >= 3) break
