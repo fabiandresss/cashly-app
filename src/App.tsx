@@ -8,6 +8,7 @@ import { AsistentePage } from '@/pages/Asistente'
 import { DashboardPage } from '@/pages/Dashboard'
 import { EstadisticasPage } from '@/pages/Estadisticas'
 import { LoginPage } from '@/pages/Login'
+import { MetasPage } from '@/pages/Metas'
 import { MovimientosPage } from '@/pages/Movimientos'
 import { PresupuestosPage } from '@/pages/Presupuestos'
 import { RecuperarPage } from '@/pages/Recuperar'
@@ -25,6 +26,7 @@ export default function App() {
                 <Route path="movimientos" element={<MovimientosPage />} />
                 <Route path="presupuestos" element={<PresupuestosPage />} />
                 <Route path="estadisticas" element={<EstadisticasPage />} />
+                <Route path="metas" element={<MetasPage />} />
                 <Route path="asistente" element={<AsistentePage />} />
                 <Route path="configuracion" element={<AjustesPage />} />
               </Route>

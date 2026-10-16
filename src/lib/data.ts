@@ -6,6 +6,11 @@ import type {
   BudgetInput,
   Category,
   CategoryInput,
+  GoalContribution,
+  GoalInput,
+  RecurringInput,
+  RecurringRule,
+  SavingsGoal,
   Transaction,
   TransactionFilters,
   TransactionInput,
@@ -30,7 +35,8 @@ function fail(error: { code?: string; message?: string }): never {
   throw new Error(known ?? 'No se pudo completar la operación. Inténtalo de nuevo.')
 }
 
-const TRANSACTION_COLUMNS = 'id, category_id, type, amount, occurred_on, description'
+// select('*') tolera que la columna `name` aún no exista (migración 0007 pendiente).
+const TRANSACTION_COLUMNS = '*'
 
 // ---------- Categorías ----------
 
@@ -189,6 +195,140 @@ export async function listMonthExpenses(month: string): Promise<Transaction[]> {
     if (page.length < pageSize) break
   }
   return rows
+}
+
+// ---------- Movimientos programados ----------
+
+const RECURRING_COLUMNS = '*'
+
+function recurringRow(row: Record<string, unknown>): RecurringRule {
+  return {
+    id: String(row.id),
+    category_id: row.category_id ? String(row.category_id) : null,
+    type: row.type as RecurringRule['type'],
+    amount: Number(row.amount),
+    name: (row.name as string | null) ?? null,
+    description: (row.description as string | null) ?? null,
+    frequency: row.frequency as RecurringRule['frequency'],
+    day_of_month: row.day_of_month === null ? null : Number(row.day_of_month),
+    start_date: String(row.start_date),
+    end_date: (row.end_date as string | null) ?? null,
+    active: Boolean(row.active),
+  }
+}
+
+export async function listRecurring(): Promise<RecurringRule[]> {
+  const { data, error } = await db()
+    .from('recurring_transactions')
+    .select(RECURRING_COLUMNS)
+    .order('created_at', { ascending: false })
+  if (error) fail(error)
+  return (data ?? []).map((row) => recurringRow(row as Record<string, unknown>))
+}
+
+export async function createRecurring(input: RecurringInput): Promise<void> {
+  const { error } = await db().from('recurring_transactions').insert(input)
+  if (error) fail(error)
+}
+
+export async function updateRecurring(id: string, input: RecurringInput): Promise<void> {
+  const { error } = await db().from('recurring_transactions').update(input).eq('id', id)
+  if (error) fail(error)
+}
+
+export async function setRecurringActive(id: string, active: boolean): Promise<void> {
+  const { error } = await db().from('recurring_transactions').update({ active }).eq('id', id)
+  if (error) fail(error)
+}
+
+export async function deleteRecurring(id: string): Promise<void> {
+  const { error } = await db().from('recurring_transactions').delete().eq('id', id)
+  if (error) fail(error)
+}
+
+/** Genera los movimientos programados pendientes. Devuelve cuántos creó. */
+export async function generateMyRecurring(): Promise<number> {
+  const { data, error } = await db().rpc('generate_my_recurring')
+  if (error) fail(error)
+  return Number(data ?? 0)
+}
+
+// ---------- Metas de ahorro ----------
+
+export async function listGoals(): Promise<SavingsGoal[]> {
+  const [goalsRes, contribRes] = await Promise.all([
+    db()
+      .from('savings_goals')
+      .select('id, name, target_amount, target_date, color, icon')
+      .order('created_at', { ascending: true }),
+    db().from('goal_contributions').select('goal_id, amount'),
+  ])
+  if (goalsRes.error) fail(goalsRes.error)
+  if (contribRes.error) fail(contribRes.error)
+
+  const saved = new Map<string, number>()
+  for (const c of (contribRes.data ?? []) as Array<{ goal_id: string; amount: number }>) {
+    saved.set(c.goal_id, (saved.get(c.goal_id) ?? 0) + Number(c.amount))
+  }
+
+  return ((goalsRes.data ?? []) as Array<Record<string, unknown>>).map((g) => ({
+    id: String(g.id),
+    name: String(g.name),
+    target_amount: Number(g.target_amount),
+    target_date: (g.target_date as string | null) ?? null,
+    color: String(g.color),
+    icon: resolveIcon(String(g.name), g.icon),
+    saved: saved.get(String(g.id)) ?? 0,
+  }))
+}
+
+export async function createGoal(input: GoalInput): Promise<void> {
+  const { error } = await db().from('savings_goals').insert(input)
+  if (error) fail(error)
+}
+
+export async function updateGoal(id: string, input: GoalInput): Promise<void> {
+  const { error } = await db().from('savings_goals').update(input).eq('id', id)
+  if (error) fail(error)
+}
+
+export async function deleteGoal(id: string): Promise<void> {
+  const { error } = await db().from('savings_goals').delete().eq('id', id)
+  if (error) fail(error)
+}
+
+export async function addContribution(
+  goalId: string,
+  amount: number,
+  note: string | null,
+  contributedOn: string,
+): Promise<void> {
+  const { error } = await db()
+    .from('goal_contributions')
+    .insert({ goal_id: goalId, amount, note, contributed_on: contributedOn })
+  if (error) fail(error)
+}
+
+export async function listContributions(goalId: string): Promise<GoalContribution[]> {
+  const { data, error } = await db()
+    .from('goal_contributions')
+    .select('id, amount, note, contributed_on')
+    .eq('goal_id', goalId)
+    .order('contributed_on', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(100)
+  if (error) fail(error)
+  return ((data ?? []) as Array<Record<string, unknown>>).map((c) => ({
+    id: String(c.id),
+    amount: Number(c.amount),
+    note: (c.note as string | null) ?? null,
+    contributed_on: String(c.contributed_on),
+  }))
+}
+
+export async function deleteContribution(id: string): Promise<void> {
+  const { error } = await db().from('goal_contributions').delete().eq('id', id)
+  if (error) fail(error)
 }
 
 // ---------- Ajustes del usuario ----------

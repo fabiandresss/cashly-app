@@ -1,3 +1,4 @@
+import { useMoney } from '@/hooks/useMoney'
 import {
   Area,
   AreaChart,
@@ -12,9 +13,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { formatMoney } from '@/lib/format'
 
-const compact = new Intl.NumberFormat('es-CL', { notation: 'compact', maximumFractionDigits: 1 })
 
 const tooltipStyle = {
   background: 'var(--color-surface)',
@@ -24,7 +23,7 @@ const tooltipStyle = {
   boxShadow: 'var(--shadow-lift)',
 }
 const labelStyle = { color: 'var(--color-heading)', fontWeight: 600 }
-const tick = { fill: 'var(--color-muted)', fontSize: 12 }
+const axisTick = { fill: 'var(--color-muted)', fontSize: 12 }
 
 // ---------- Dona ----------
 
@@ -35,6 +34,7 @@ export interface DonutDatum {
 }
 
 export function DonutChart({ data, centerLabel, centerValue }: { data: readonly DonutDatum[]; centerLabel: string; centerValue: string }) {
+  const { money } = useMoney()
   return (
     <div className="relative h-56 w-full" role="img" aria-label={`Distribución por categoría. ${centerLabel}: ${centerValue}`}>
       <ResponsiveContainer width="100%" height="100%">
@@ -53,7 +53,7 @@ export function DonutChart({ data, centerLabel, centerValue }: { data: readonly 
             ))}
           </Pie>
           <Tooltip
-            formatter={(value, name) => [formatMoney(Number(value ?? 0)), String(name)]}
+            formatter={(value, name) => [money(Number(value ?? 0)), String(name)]}
             contentStyle={tooltipStyle}
             labelStyle={labelStyle}
           />
@@ -70,6 +70,7 @@ export function DonutChart({ data, centerLabel, centerValue }: { data: readonly 
 // ---------- Balance acumulado ----------
 
 export function BalanceChart({ data }: { data: readonly { label: string; balance: number }[] }) {
+  const { money, tick } = useMoney()
   return (
     <div className="h-64 w-full" role="img" aria-label="Evolución del saldo acumulado">
       <ResponsiveContainer width="100%" height="100%">
@@ -81,16 +82,16 @@ export function BalanceChart({ data }: { data: readonly { label: string; balance
             </linearGradient>
           </defs>
           <CartesianGrid vertical={false} stroke="var(--color-line)" />
-          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={tick} />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={axisTick} />
           <YAxis
             tickLine={false}
             axisLine={false}
             width={48}
-            tickFormatter={(v: number) => compact.format(v)}
-            tick={tick}
+            tickFormatter={(v: number) => tick(v)}
+            tick={axisTick}
           />
           <Tooltip
-            formatter={(value) => [formatMoney(Number(value ?? 0)), 'Saldo']}
+            formatter={(value) => [money(Number(value ?? 0)), 'Saldo']}
             contentStyle={tooltipStyle}
             labelStyle={labelStyle}
           />
@@ -111,23 +112,24 @@ export function BalanceChart({ data }: { data: readonly { label: string; balance
 // ---------- Gasto por día de la semana ----------
 
 export function WeekdayChart({ data }: { data: readonly { label: string; total: number }[] }) {
+  const { money, tick } = useMoney()
   const max = Math.max(...data.map((d) => d.total), 0)
   return (
     <div className="h-64 w-full" role="img" aria-label="Gasto total por día de la semana">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={[...data]} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--color-line)" />
-          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={tick} />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={axisTick} />
           <YAxis
             tickLine={false}
             axisLine={false}
             width={48}
-            tickFormatter={(v: number) => compact.format(v)}
-            tick={tick}
+            tickFormatter={(v: number) => tick(v)}
+            tick={axisTick}
           />
           <Tooltip
             cursor={{ fill: 'var(--color-brand-50)' }}
-            formatter={(value) => [formatMoney(Number(value ?? 0)), 'Gastado']}
+            formatter={(value) => [money(Number(value ?? 0)), 'Gastado']}
             contentStyle={tooltipStyle}
             labelStyle={labelStyle}
           />

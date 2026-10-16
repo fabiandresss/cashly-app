@@ -5,20 +5,32 @@ export type Theme = 'light' | 'dark'
 interface SettingsValue {
   theme: Theme
   setTheme: (theme: Theme) => void
+  /** Modo privacidad: oculta los montos en pantalla. */
+  privacy: boolean
+  setPrivacy: (value: boolean) => void
 }
 
 const THEME_KEY = 'cashly-theme'
+const PRIVACY_KEY = 'cashly-privacy'
 
-function readTheme(): string | null {
+function readStorage(key: string): string | null {
   try {
-    return localStorage.getItem(THEME_KEY)
+    return localStorage.getItem(key)
   } catch {
     return null
   }
 }
 
+function writeStorage(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    /* almacenamiento no disponible: el valor vive solo en memoria */
+  }
+}
+
 function initialTheme(): Theme {
-  const stored = readTheme()
+  const stored = readStorage(THEME_KEY)
   if (stored === 'light' || stored === 'dark') return stored
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -27,6 +39,7 @@ const SettingsContext = createContext<SettingsValue | null>(null)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(initialTheme)
+  const [privacy, setPrivacyState] = useState<boolean>(() => readStorage(PRIVACY_KEY) === '1')
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
@@ -34,14 +47,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next)
-    try {
-      localStorage.setItem(THEME_KEY, next)
-    } catch {
-      /* almacenamiento no disponible: el valor vive solo en memoria */
-    }
+    writeStorage(THEME_KEY, next)
   }, [])
 
-  const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme])
+  const setPrivacy = useCallback((next: boolean) => {
+    setPrivacyState(next)
+    writeStorage(PRIVACY_KEY, next ? '1' : '0')
+  }, [])
+
+  const value = useMemo(
+    () => ({ theme, setTheme, privacy, setPrivacy }),
+    [theme, setTheme, privacy, setPrivacy],
+  )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
 }

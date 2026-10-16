@@ -1,13 +1,55 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { Icon } from '@/components/ui/Icon'
 import { LogoFull, LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { generateMyRecurring } from '@/lib/data'
+import { useSettings } from '@/lib/settings'
+
+const EYE = 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z'
+const EYE_OFF =
+  'M3 3l18 18M10.6 6.2A9.8 9.8 0 0112 5c6 0 10 7 10 7a17 17 0 01-3.2 3.9M6.1 7.6A17 17 0 002 12s4 7 10 7a9.6 9.6 0 004-.9'
+
+function PrivacyToggle() {
+  const { privacy, setPrivacy } = useSettings()
+  return (
+    <button
+      type="button"
+      onClick={() => setPrivacy(!privacy)}
+      aria-pressed={privacy}
+      aria-label={privacy ? 'Mostrar montos' : 'Ocultar montos'}
+      title={privacy ? 'Mostrar montos' : 'Modo privacidad: ocultar montos'}
+      className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+        privacy
+          ? 'border-brand-500 bg-brand-50 text-link'
+          : 'border-line bg-surface text-muted hover:text-ink'
+      }`}
+    >
+      <Icon path={privacy ? EYE_OFF : EYE} className="h-[18px] w-[18px]" />
+    </button>
+  )
+}
 
 export function AppShell() {
   const { displayName: name, user } = useAuth()
   const fixedHeight = useLocation().pathname === '/asistente'
+
+  // Antes de mostrar las pantallas se registran los movimientos programados que ya correspondían.
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    let active = true
+    generateMyRecurring()
+      .catch(() => 0)
+      .finally(() => {
+        if (active) setReady(true)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div className="flex h-full">
       <aside className="relative hidden w-72 shrink-0 flex-col overflow-hidden bg-gradient-to-b from-brand-900 via-brand-900 to-brand-950 p-5 text-white md:flex">
@@ -66,12 +108,21 @@ export function AppShell() {
           <p className="hidden text-sm text-muted md:block">
             Hola, <span className="font-semibold text-heading">{name}</span>
           </p>
-          <UserMenu />
+          <div className="flex items-center gap-2">
+            <PrivacyToggle />
+            <UserMenu />
+          </div>
         </div>
         {/* El asistente ocupa exactamente el espacio disponible; el resto de páginas se desplaza. */}
         <div className={`min-h-0 flex-1 ${fixedHeight ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           <div className={`mx-auto max-w-6xl p-5 md:p-10 ${fixedHeight ? 'h-full' : ''}`}>
-            <Outlet />
+            {ready ? (
+              <Outlet />
+            ) : (
+              <div className="flex justify-center py-24">
+                <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -80,7 +131,7 @@ export function AppShell() {
         aria-label="Principal"
         className="fixed inset-x-3 bottom-3 z-10 flex justify-around rounded-2xl border border-white/10 bg-brand-900/95 px-2 py-2 shadow-lift backdrop-blur md:hidden"
       >
-        {NAV_ITEMS.map((item) => (
+        {NAV_ITEMS.filter((item) => item.mobile !== false).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

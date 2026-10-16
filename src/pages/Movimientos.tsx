@@ -1,5 +1,7 @@
+import { useMoney } from '@/hooks/useMoney'
 import { useMemo, useState } from 'react'
 import { CategoryManager } from '@/components/features/CategoryManager'
+import { RecurringManager } from '@/components/features/RecurringManager'
 import { TransactionForm } from '@/components/features/TransactionForm'
 import { Alert } from '@/components/ui/Alert'
 import { Card } from '@/components/ui/Card'
@@ -21,7 +23,7 @@ import {
   listTransactions,
   updateTransaction,
 } from '@/lib/data'
-import { currentMonth, formatDate, formatMoney } from '@/lib/format'
+import { currentMonth, formatDate } from '@/lib/format'
 import type { Category, Transaction, TransactionFilters, TransactionInput } from '@/types/db'
 
 const PLUS = 'M12 5v14M5 12h14'
@@ -29,7 +31,7 @@ const EDIT = 'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z'
 const TRASH = 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6'
 const LIST_ICON = 'M7 7h13M7 7l3-3M7 7l3 3M17 17H4M17 17l-3-3M17 17l-3 3'
 
-type Tab = 'movements' | 'categories'
+type Tab = 'movements' | 'recurring' | 'categories'
 
 // Referencias estables para evitar recalcular memos mientras no hay datos.
 const NO_CATEGORIES: readonly Category[] = []
@@ -42,6 +44,7 @@ const TYPE_OPTIONS = [
 ]
 
 export function MovimientosPage() {
+  const { money } = useMoney()
   const [tab, setTab] = useState<Tab>('movements')
   const [filters, setFilters] = useState<TransactionFilters>({
     month: currentMonth(),
@@ -112,6 +115,7 @@ export function MovimientosPage() {
         {(
           [
             ['movements', 'Movimientos'],
+            ['recurring', 'Programados'],
             ['categories', 'Categorías'],
           ] as const
         ).map(([value, label]) => (
@@ -130,7 +134,9 @@ export function MovimientosPage() {
         ))}
       </div>
 
-      {tab === 'categories' ? (
+      {tab === 'recurring' ? (
+        <RecurringManager categories={categories} onGenerated={transactionsQuery.reload} />
+      ) : tab === 'categories' ? (
         <>
           {categoriesQuery.error && <Alert tone="error">{categoriesQuery.error}</Alert>}
           <CategoryManager categories={categories} onChanged={categoriesQuery.reload} />
@@ -164,21 +170,21 @@ export function MovimientosPage() {
           <div className="mt-5 grid gap-5 sm:grid-cols-3">
             <StatCard
               label="Ingresos"
-              value={formatMoney(totals.income)}
+              value={money(totals.income)}
               hint="Del período filtrado"
               icon="M12 19V5M5 12l7-7 7 7"
               delay={120}
             />
             <StatCard
               label="Gastos"
-              value={formatMoney(totals.expense)}
+              value={money(totals.expense)}
               hint="Del período filtrado"
               icon="M12 5v14M5 12l7 7 7-7"
               delay={200}
             />
             <StatCard
               label="Balance"
-              value={formatMoney(totals.balance)}
+              value={money(totals.balance)}
               hint="Ingresos menos gastos"
               icon="M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2"
               delay={280}
@@ -217,11 +223,14 @@ export function MovimientosPage() {
                       <CategoryBadge icon={category?.icon} color={category?.color} />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-ink">
-                          {t.description || category?.name || 'Sin categoría'}
+                          {t.name || t.description || category?.name || 'Sin categoría'}
                         </p>
                         <p className="truncate text-xs text-muted">
                           {category?.name ?? 'Sin categoría'} · {formatDate(t.occurred_on)}
                         </p>
+                        {t.name && t.description && (
+                          <p className="truncate text-xs text-muted/80">{t.description}</p>
+                        )}
                       </div>
                       <p
                         className={`shrink-0 text-sm font-semibold ${
@@ -229,7 +238,7 @@ export function MovimientosPage() {
                         }`}
                       >
                         {isIncome ? '+' : '−'}
-                        {formatMoney(t.amount)}
+                        {money(t.amount)}
                       </p>
                       <button
                         type="button"
@@ -268,7 +277,7 @@ export function MovimientosPage() {
       {toDelete && (
         <ConfirmDialog
           title="Eliminar movimiento"
-          message={`Se eliminará el movimiento de ${formatMoney(toDelete.amount)}. Esta acción no se puede deshacer.`}
+          message={`Se eliminará ${toDelete.name || toDelete.description ? `"${toDelete.name || toDelete.description}"` : 'el movimiento'} por ${money(toDelete.amount)}. Esta acción no se puede deshacer.`}
           confirmLabel="Eliminar"
           onCancel={() => setToDelete(null)}
           onConfirm={async () => {

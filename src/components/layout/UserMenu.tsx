@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { signOut } from '@/lib/auth'
 import { useAuth } from '@/lib/auth-context'
 
+const SETTINGS = 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z'
 const LOGOUT_ICON = 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9'
 
 function initials(name: string): string {
@@ -72,12 +74,21 @@ export function UserMenu() {
             <p className="truncate text-sm font-semibold text-heading">{name}</p>
             {user?.email && <p className="truncate text-xs text-muted">{user.email}</p>}
           </div>
+          <Link
+            to="/configuracion"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="mt-2 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-brand-50"
+          >
+            <Icon path={SETTINGS} className="h-[18px] w-[18px]" />
+            Configuración
+          </Link>
           <button
             type="button"
             role="menuitem"
             onClick={handleSignOut}
             disabled={loading}
-            className="mt-2 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
           >
             <Icon path={LOGOUT_ICON} className="h-[18px] w-[18px]" />
             Cerrar sesión

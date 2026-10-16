@@ -1,3 +1,4 @@
+import { useMoney } from '@/hooks/useMoney'
 import { useMemo, useState } from 'react'
 import { BudgetForm } from '@/components/features/BudgetForm'
 import { Alert } from '@/components/ui/Alert'
@@ -23,7 +24,7 @@ import {
   listMonthExpenses,
   updateBudget,
 } from '@/lib/data'
-import { currentMonth, formatMoney, monthRange, monthTitle, shiftMonth } from '@/lib/format'
+import { currentMonth, monthRange, monthTitle, shiftMonth } from '@/lib/format'
 import type { Budget, Category } from '@/types/db'
 
 const PLUS = 'M12 5v14M5 12h14'
@@ -39,6 +40,7 @@ const NO_BUDGETS: readonly Budget[] = []
 const percent = new Intl.NumberFormat('es-CL', { style: 'percent', maximumFractionDigits: 0 })
 
 export function PresupuestosPage() {
+  const { money } = useMoney()
   const [month, setMonth] = useState(currentMonth())
   const [formState, setFormState] = useState<{ open: boolean; editing?: Budget | undefined }>({ open: false })
   const [toDelete, setToDelete] = useState<Budget | null>(null)
@@ -149,16 +151,16 @@ export function PresupuestosPage() {
           </button>
         </div>
         <div className="mt-4 flex items-baseline justify-between text-sm">
-          <span className="font-semibold text-ink">{formatMoney(used)}</span>
-          <span className="text-muted">de {formatMoney(budget.amount)}</span>
+          <span className="font-semibold text-ink">{money(used)}</span>
+          <span className="text-muted">de {money(budget.amount)}</span>
         </div>
         <div className="mt-2">
           <ProgressBar ratio={ratio} status={status} label={`Avance del presupuesto de ${category?.name ?? 'categoría'}`} />
         </div>
         <p className={`mt-2 text-xs ${remaining < 0 ? STATUS_STYLES.exceeded.text : 'text-muted'}`}>
           {remaining >= 0
-            ? `Te quedan ${formatMoney(remaining)} · ${percent.format(ratio)} usado`
-            : `Te pasaste por ${formatMoney(-remaining)}`}
+            ? `Te quedan ${money(remaining)} · ${percent.format(ratio)} usado`
+            : `Te pasaste por ${money(-remaining)}`}
         </p>
       </Card>
     )
@@ -247,21 +249,21 @@ export function PresupuestosPage() {
       <div className="grid gap-5 sm:grid-cols-3">
         <StatCard
           label={totalBudget ? 'Presupuesto total' : 'Suma de presupuestos'}
-          value={formatMoney(limit)}
+          value={money(limit)}
           hint={totalBudget ? 'Límite global del mes' : 'Suma de los límites por categoría'}
           icon={WALLET}
           delay={80}
         />
         <StatCard
           label="Gastado"
-          value={formatMoney(spent.total)}
+          value={money(spent.total)}
           hint="Todos los gastos del mes"
           icon="M12 5v14M5 12l7 7 7-7"
           delay={160}
         />
         <StatCard
           label={available >= 0 ? 'Disponible' : 'Excedido'}
-          value={formatMoney(Math.abs(available))}
+          value={money(Math.abs(available))}
           hint={limit > 0 ? `${percent.format(spent.total / limit)} del límite usado` : 'Define un presupuesto'}
           icon="M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2"
           delay={240}
@@ -295,8 +297,8 @@ export function PresupuestosPage() {
             </button>
           </div>
           <div className="mt-4 flex items-baseline justify-between text-sm">
-            <span className="font-semibold text-ink">{formatMoney(spent.total)}</span>
-            <span className="text-muted">de {formatMoney(totalBudget.amount)}</span>
+            <span className="font-semibold text-ink">{money(spent.total)}</span>
+            <span className="text-muted">de {money(totalBudget.amount)}</span>
           </div>
           <div className="mt-2">
             <ProgressBar
@@ -350,7 +352,7 @@ export function PresupuestosPage() {
       {toDelete && (
         <ConfirmDialog
           title="Eliminar presupuesto"
-          message={`Se eliminará el límite de ${formatMoney(toDelete.amount)}. Tus movimientos no se modifican.`}
+          message={`Se eliminará el límite de ${money(toDelete.amount)}. Tus movimientos no se modifican.`}
           confirmLabel="Eliminar"
           onCancel={() => setToDelete(null)}
           onConfirm={async () => {

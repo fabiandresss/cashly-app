@@ -1,3 +1,4 @@
+import { useMoney } from '@/hooks/useMoney'
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
@@ -16,7 +17,7 @@ import {
   listBudgets,
   listCategories,
 } from '@/lib/data'
-import { currentMonth, formatDate, formatMoney } from '@/lib/format'
+import { currentMonth, formatDate } from '@/lib/format'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import type { Category } from '@/types/db'
 
@@ -44,6 +45,7 @@ function Spinner() {
 }
 
 export function DashboardPage() {
+  const { money } = useMoney()
   const { displayName } = useAuth()
   const transactionsQuery = useAsyncData(listAllTransactions, [])
   const categoriesQuery = useAsyncData(listCategories, [])
@@ -94,7 +96,7 @@ export function DashboardPage() {
         <p className="relative mt-3 max-w-lg text-sm text-white/90">
           {summary
             ? summary.hasData
-              ? `Este mes llevas ${formatMoney(summary.monthIncome)} en ingresos y ${formatMoney(summary.monthExpense)} en gastos.`
+              ? `Este mes llevas ${money(summary.monthIncome)} en ingresos y ${money(summary.monthExpense)} en gastos.`
               : 'Aún no tienes movimientos. Registra el primero para ver tu resumen aquí.'
             : 'Cargando tu resumen financiero…'}
         </p>
@@ -116,28 +118,28 @@ export function DashboardPage() {
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Saldo total"
-          value={summary ? formatMoney(summary.balance) : '—'}
+          value={summary ? money(summary.balance) : '—'}
           hint="Ingresos menos gastos, histórico"
           icon="M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2"
           delay={100}
         />
         <StatCard
           label="Ingresos del mes"
-          value={summary ? formatMoney(summary.monthIncome) : '—'}
+          value={summary ? money(summary.monthIncome) : '—'}
           hint={summary ? describeChange(summary.incomeChange) : 'Cargando…'}
           icon="M12 19V5M5 12l7-7 7 7"
           delay={190}
         />
         <StatCard
           label="Gastos del mes"
-          value={summary ? formatMoney(summary.monthExpense) : '—'}
+          value={summary ? money(summary.monthExpense) : '—'}
           hint={summary ? describeChange(summary.expenseChange) : 'Cargando…'}
           icon="M12 5v14M5 12l7 7 7-7"
           delay={280}
         />
         <StatCard
           label="Ahorro del mes"
-          value={summary ? formatMoney(summary.monthSavings) : '—'}
+          value={summary ? money(summary.monthSavings) : '—'}
           hint={
             summary
               ? summary.savingsRate === null
@@ -201,7 +203,7 @@ export function DashboardPage() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
-                        {t.description || category?.name || 'Sin categoría'}
+                        {t.name || t.description || category?.name || 'Sin categoría'}
                       </p>
                       <p className="text-xs text-muted">{formatDate(t.occurred_on)}</p>
                     </div>
@@ -211,7 +213,7 @@ export function DashboardPage() {
                       }`}
                     >
                       {isIncome ? '+' : '−'}
-                      {formatMoney(t.amount)}
+                      {money(t.amount)}
                     </p>
                   </li>
                 )
@@ -249,7 +251,7 @@ export function DashboardPage() {
                       <span className="truncate">{name}</span>
                     </span>
                     <span className={`shrink-0 text-xs font-medium ${STATUS_STYLES[status].text}`}>
-                      {formatMoney(used)} / {formatMoney(budget.amount)}
+                      {money(used)} / {money(budget.amount)}
                     </span>
                   </div>
                   <ProgressBar ratio={ratio} status={status} label={`Avance de ${name}`} />
@@ -281,7 +283,7 @@ export function DashboardPage() {
                       <span className="truncate">{category?.name ?? 'Sin categoría'}</span>
                     </span>
                     <span className="shrink-0 text-muted">
-                      {formatMoney(item.amount)} · {percent.format(item.share)}
+                      {money(item.amount)} · {percent.format(item.share)}
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-canvas">
