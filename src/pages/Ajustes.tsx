@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { BudgetAlertSettings } from '@/components/features/BudgetAlertSettings'
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -99,6 +100,8 @@ export function AjustesPage() {
             </Button>
           </form>
         </Card>
+
+        <BudgetAlertSettings />
       </div>
     </>
   )

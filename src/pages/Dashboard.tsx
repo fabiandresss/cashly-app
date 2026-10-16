@@ -8,8 +8,16 @@ import { StatCard } from '@/components/ui/StatCard'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { useAuth } from '@/lib/auth-context'
 import { summarize } from '@/lib/dashboard'
-import { listAllTransactions, listCategories } from '@/lib/data'
-import { formatDate, formatMoney } from '@/lib/format'
+import { budgetStatus, STATUS_STYLES, sumExpenses } from '@/lib/budgets'
+import {
+  DEFAULT_ALERT_THRESHOLD,
+  getAlertThreshold,
+  listAllTransactions,
+  listBudgets,
+  listCategories,
+} from '@/lib/data'
+import { currentMonth, formatDate, formatMoney } from '@/lib/format'
+import { ProgressBar } from '@/components/ui/ProgressBar'
 import type { Category } from '@/types/db'
 
 const EvolutionChart = lazy(() =>
@@ -46,6 +54,28 @@ export function DashboardPage() {
   )
   const categories = categoriesQuery.data ?? NO_CATEGORIES
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
+
+  const [month] = useState(() => currentMonth())
+  const budgetsQuery = useAsyncData(() => listBudgets(month), [month])
+  const thresholdQuery = useAsyncData(getAlertThreshold, [])
+  const threshold = thresholdQuery.data ?? DEFAULT_ALERT_THRESHOLD
+
+  const budgetProgress = useMemo(() => {
+    const budgets = budgetsQuery.data
+    if (!budgets || !transactionsQuery.data) return []
+    const monthExpenses = transactionsQuery.data.filter(
+      (t) => t.type === 'expense' && t.occurred_on.startsWith(month),
+    )
+    const spent = sumExpenses(monthExpenses)
+    return budgets
+      .map((b) => {
+        const used = b.category_id ? (spent.byCategory.get(b.category_id) ?? 0) : spent.total
+        const ratio = b.amount > 0 ? used / b.amount : 0
+        return { budget: b, used, ratio, status: budgetStatus(used, b.amount, threshold) }
+      })
+      .sort((a, b) => b.ratio - a.ratio)
+      .slice(0, 4)
+  }, [budgetsQuery.data, transactionsQuery.data, month, threshold])
 
   const [monthName] = useState(() =>
     new Date().toLocaleDateString('es-CL', { month: 'long', year: 'numeric' }),
@@ -190,6 +220,45 @@ export function DashboardPage() {
           )}
         </Card>
       </div>
+
+      {budgetProgress.length > 0 && (
+        <Card className="mt-5" delay={600}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-heading">Presupuestos del mes</h2>
+              <p className="text-xs text-muted">Los más cerca de su límite</p>
+            </div>
+            <Link to="/presupuestos" className="text-xs font-semibold text-link hover:text-link-hover">
+              Ver todos
+            </Link>
+          </div>
+          <ul className="mt-4 space-y-4">
+            {budgetProgress.map(({ budget, used, ratio, status }) => {
+              const category = budget.category_id ? categoryById.get(budget.category_id) : undefined
+              const name = budget.category_id ? (category?.name ?? 'Categoría') : 'Presupuesto total'
+              return (
+                <li key={budget.id}>
+                  <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
+                    <span className="flex min-w-0 items-center gap-2 font-medium text-ink">
+                      <CategoryBadge
+                        icon={budget.category_id ? category?.icon : 'wallet'}
+                        color={budget.category_id ? category?.color : '#10b981'}
+                        className="h-6 w-6 rounded-lg"
+                        iconClassName="h-3.5 w-3.5"
+                      />
+                      <span className="truncate">{name}</span>
+                    </span>
+                    <span className={`shrink-0 text-xs font-medium ${STATUS_STYLES[status].text}`}>
+                      {formatMoney(used)} / {formatMoney(budget.amount)}
+                    </span>
+                  </div>
+                  <ProgressBar ratio={ratio} status={status} label={`Avance de ${name}`} />
+                </li>
+              )
+            })}
+          </ul>
+        </Card>
+      )}
 
       {summary && summary.topCategories.length > 0 && (
         <Card className="mt-5" delay={640}>

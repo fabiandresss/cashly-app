@@ -34,6 +34,23 @@ export interface CategoryInput {
   icon: string
 }
 
+export interface Budget {
+  id: string
+  /** null = presupuesto total del mes. */
+  category_id: string | null
+  /** Primer día del mes en formato YYYY-MM-01. */
+  month: string
+  amount: number
+}
+
+export interface BudgetInput {
+  category_id: string | null
+  month: string
+  amount: number
+}
+
+export type BudgetStatus = 'ok' | 'warning' | 'exceeded'
+
 export interface TransactionFilters {
   /** Mes en formato YYYY-MM. */
   month: string
