@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
+import { LogoMark } from '@/components/ui/Logo'
 import { NAV_ITEMS } from '@/lib/navigation'
 
 export function AppShell() {
@@ -10,9 +11,7 @@ export function AppShell() {
         <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-brand-400/10 blur-3xl" />
 
         <div className="relative mb-10 flex items-center gap-3 px-2 pt-2">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-300 to-brand-500 text-xl font-bold text-brand-950 shadow-glow">
-            C
-          </span>
+          <LogoMark className="h-10 w-10 ring-1 ring-white/15 rounded-[14px]" />
           <div>
             <p className="text-xl font-semibold leading-none tracking-tight">Cashly</p>
             <p className="mt-1 text-xs text-brand-200/70">Finanzas personales</p>
