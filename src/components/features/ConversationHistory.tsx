@@ -38,7 +38,7 @@ export function ConversationHistory({
       <button
         type="button"
         onClick={onNew}
-        className="mb-3 inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift"
+        className="fx-btn fx-btn--accent mb-3 shrink-0"
       >
         <Icon path={PLUS} className="h-4 w-4" />
         Nueva conversación
@@ -53,7 +53,7 @@ export function ConversationHistory({
           </p>
         ) : loading && conversations.length === 0 ? (
           <div className="flex justify-center py-6">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-500" />
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-mute border-t-ink" />
           </div>
         ) : conversations.length === 0 ? (
           <p className="px-1 text-sm text-muted">Aún no tienes conversaciones guardadas.</p>
@@ -80,7 +80,7 @@ export function ConversationHistory({
                     type="button"
                     onClick={() => onDelete(c)}
                     aria-label={`Eliminar conversación ${c.title}`}
-                    className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted opacity-100 transition-colors hover:bg-red-500/10 hover:text-red-600 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>

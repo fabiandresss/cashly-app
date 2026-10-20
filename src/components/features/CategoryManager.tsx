@@ -209,14 +209,14 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             <button
                               type="button"
                               onClick={handleSaveEdit}
-                              className="rounded-lg bg-brand-700 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-600"
+                              className="fx-btn fx-btn--accent fx-btn--sm"
                             >
                               Guardar
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditing(null)}
-                              className="rounded-lg border border-line px-3 py-2 text-xs font-semibold text-ink hover:bg-brand-50"
+                              className="fx-btn fx-btn--soft fx-btn--sm"
                             >
                               Cancelar
                             </button>
@@ -235,7 +235,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             type="button"
                             onClick={() => startEdit(category)}
                             aria-label={`Editar ${category.name}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+                            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                           >
                             <Icon path={EDIT} className="h-4 w-4" />
                           </button>
@@ -243,7 +243,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             type="button"
                             onClick={() => setToDelete(category)}
                             aria-label={`Eliminar ${category.name}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+                            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                           >
                             <Icon path={TRASH} className="h-4 w-4" />
                           </button>

@@ -251,7 +251,7 @@ export function AsistentePage() {
         <button
           type="button"
           onClick={() => setHistoryOpen(true)}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-brand-50 lg:hidden"
+          className="fx-btn fx-btn--soft shrink-0 lg:hidden"
         >
           <Icon path={CLOCK} className="h-4 w-4" />
           Historial
@@ -333,7 +333,7 @@ export function AsistentePage() {
                     type="button"
                     onClick={() => void request(messages, conversationId)}
                     disabled={loading}
-                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50"
+                    className="fx-btn fx-btn--soft fx-btn--sm"
                   >
                     Reintentar
                   </button>
@@ -370,7 +370,7 @@ export function AsistentePage() {
                   type="submit"
                   disabled={loading || input.trim().length === 0}
                   aria-label="Enviar mensaje"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-700 text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="fx-iconbtn fx-iconbtn--accent shrink-0"
                 >
                   <Icon path={SEND} className="h-5 w-5" />
                 </button>

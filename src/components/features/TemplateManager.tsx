@@ -52,7 +52,7 @@ export function TemplateManager({ templates, categories, loading, error, onChang
         <button
           type="button"
           onClick={() => setFormOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift"
+          className="fx-btn fx-btn--accent"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nueva plantilla
@@ -68,7 +68,7 @@ export function TemplateManager({ templates, categories, loading, error, onChang
       <Card delay={80}>
         {loading && templates.length === 0 ? (
           <div className="flex justify-center py-10">
-            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
           </div>
         ) : templates.length === 0 ? (
           <EmptyState
@@ -77,12 +77,12 @@ export function TemplateManager({ templates, categories, loading, error, onChang
             description="Crea una, o usa la estrella en cualquier movimiento para guardarlo como plantilla."
           />
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="fx-list fx-list--flat">
             {templates.map((t) => {
               const category = t.category_id ? categoryById.get(t.category_id) : undefined
               const isIncome = t.type === 'income'
               return (
-                <li key={t.id} className="flex items-center gap-3 py-3">
+                <li key={t.id} className="fx-row">
                   <CategoryBadge icon={category?.icon} color={category?.color} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">{t.name}</p>
@@ -90,7 +90,7 @@ export function TemplateManager({ templates, categories, loading, error, onChang
                   </div>
                   <p
                     className={`shrink-0 text-sm font-semibold ${
-                      isIncome ? 'text-link' : 'text-red-600 dark:text-red-400'
+                      isIncome ? 'text-positive' : 'text-ink'
                     }`}
                   >
                     {isIncome ? '+' : '−'}
@@ -99,7 +99,7 @@ export function TemplateManager({ templates, categories, loading, error, onChang
                   <button
                     type="button"
                     onClick={() => onUse(t)}
-                    className="shrink-0 rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-brand-50"
+                    className="fx-btn fx-btn--soft fx-btn--sm shrink-0"
                   >
                     Usar
                   </button>
@@ -107,7 +107,7 @@ export function TemplateManager({ templates, categories, loading, error, onChang
                     type="button"
                     onClick={() => setToDelete(t)}
                     aria-label={`Eliminar plantilla ${t.name}`}
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>

@@ -3,8 +3,8 @@ import { CategoryManager } from '@/components/features/CategoryManager'
 import { RecurringManager } from '@/components/features/RecurringManager'
 import { TemplateManager } from '@/components/features/TemplateManager'
 import { TransactionForm, type TransactionSeed } from '@/components/features/TransactionForm'
+import { Eyebrow, FxButton, FxCard, GroupLabel, IconButton, List, ListRow, Segmented, StatCard } from '@/components/fx'
 import { Alert } from '@/components/ui/Alert'
-import { Card } from '@/components/ui/Card'
 import { CategoryBadge } from '@/components/ui/CategoryBadge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -13,7 +13,6 @@ import { Modal } from '@/components/ui/Modal'
 import { MoneyField } from '@/components/ui/MoneyField'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Select, type SelectOption } from '@/components/ui/Select'
-import { StatCard } from '@/components/ui/StatCard'
 import { TextField } from '@/components/ui/TextField'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { useMoney } from '@/hooks/useMoney'
@@ -52,16 +51,34 @@ const NO_CATEGORIES: readonly Category[] = []
 const NO_TRANSACTIONS: readonly Transaction[] = []
 const NO_TEMPLATES: readonly TransactionTemplate[] = []
 
-const TYPE_OPTIONS = [
+const TYPE_OPTIONS: { value: TransactionFilters['type']; label: string }[] = [
   { value: 'all', label: 'Todos' },
   { value: 'income', label: 'Ingresos' },
   { value: 'expense', label: 'Gastos' },
 ]
 
+const TABS: { value: Tab; label: string }[] = [
+  { value: 'movements', label: 'Movimientos' },
+  { value: 'recurring', label: 'Programados' },
+  { value: 'templates', label: 'Plantillas' },
+  { value: 'categories', label: 'Categorías' },
+]
+
+/** Agrupa movimientos consecutivos por fecha (vienen ordenados de más nuevo a más antiguo). */
+function groupByDay(items: readonly Transaction[]): [string, Transaction[]][] {
+  const groups: [string, Transaction[]][] = []
+  for (const t of items) {
+    const last = groups[groups.length - 1]
+    if (last && last[0] === t.occurred_on) last[1].push(t)
+    else groups.push([t.occurred_on, [t]])
+  }
+  return groups
+}
+
 const PERIOD_OPTIONS: { value: PeriodMode; label: string }[] = [
-  { value: 'month', label: 'Un mes' },
-  { value: 'range', label: 'Rango de fechas' },
-  { value: 'all', label: 'Todo el historial' },
+  { value: 'month', label: 'Mes' },
+  { value: 'range', label: 'Rango' },
+  { value: 'all', label: 'Todo' },
 ]
 
 const DEFAULT_FILTERS: TransactionFilters = {
@@ -138,8 +155,8 @@ export function MovimientosPage() {
   }, [transactions])
 
   const categoryOptions: SelectOption[] = [
-    { value: 'all', label: 'Todas', icon: iconPath('star'), color: '#10b981' },
-    { value: 'none', label: 'Sin categoría', icon: iconPath('tag'), color: '#64748b' },
+    { value: 'all', label: 'Todas', icon: iconPath('star') },
+    { value: 'none', label: 'Sin categoría', icon: iconPath('tag') },
     ...categories
       .filter((c) => filters.type === 'all' || c.type === filters.type)
       .map((c) => ({ value: c.id, label: c.name, icon: iconPath(c.icon), color: c.color })),
@@ -217,45 +234,14 @@ export function MovimientosPage() {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 sm:mb-0">
-        <PageHeader title="Movimientos" description="Registra y gestiona tus ingresos y gastos." />
-        <button
-          type="button"
-          onClick={() => setFormState({ open: true })}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
-        >
-          <Icon path={PLUS} className="h-4 w-4" />
+      <div className="flex flex-wrap items-end justify-between gap-x-4">
+        <PageHeader eyebrow="Ingresos y gastos" title="Movimientos" description="Registra y gestiona tus ingresos y gastos." />
+        <FxButton icon={PLUS} onClick={() => setFormState({ open: true })} className="mb-5 w-full sm:mb-7 sm:w-auto">
           Nuevo movimiento
-        </button>
+        </FxButton>
       </div>
 
-      <div
-        role="tablist"
-        aria-label="Secciones"
-        className="mb-6 grid grid-cols-4 rounded-xl bg-surface p-1 shadow-card ring-1 ring-line sm:inline-flex"
-      >
-        {(
-          [
-            ['movements', 'Movimientos'],
-            ['recurring', 'Programados'],
-            ['templates', 'Plantillas'],
-            ['categories', 'Categorías'],
-          ] as const
-        ).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            role="tab"
-            aria-selected={tab === value}
-            onClick={() => setTab(value)}
-            className={`whitespace-nowrap rounded-lg px-1 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
-              tab === value ? 'bg-brand-700 text-white shadow-card' : 'text-muted hover:text-ink'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <Segmented label="Secciones" options={TABS} value={tab} onChange={setTab} variant="plain" className="mb-5 sm:!inline-flex" />
 
       {tab === 'recurring' ? (
         <RecurringManager categories={categories} onGenerated={transactionsQuery.reload} />
@@ -276,12 +262,12 @@ export function MovimientosPage() {
       ) : (
         <>
           {templates.length > 0 && (
-            <div className="mb-5">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+            <div className="mb-4">
+              <Eyebrow as="p" className="mb-2.5 flex items-center gap-1.5">
                 <Icon path={STAR} className="h-3.5 w-3.5" />
                 Favoritos
-              </p>
-              <div className="flex flex-wrap gap-2">
+              </Eyebrow>
+              <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
                 {templates.slice(0, 8).map((t) => {
                   const category = t.category_id ? categoryById.get(t.category_id) : undefined
                   return (
@@ -289,16 +275,16 @@ export function MovimientosPage() {
                       key={t.id}
                       type="button"
                       onClick={() => applyTemplate(t)}
-                      className="inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-1.5 pr-3.5 text-sm font-medium text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50 hover:shadow-lift"
+                      className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-surface py-1 pl-1 pr-4 text-sm font-medium text-ink shadow-card transition-transform active:scale-[0.97]"
                     >
                       <CategoryBadge
                         icon={category?.icon}
                         color={category?.color}
-                        className="h-7 w-7 rounded-full"
-                        iconClassName="h-3.5 w-3.5"
+                        className="h-9 w-9 rounded-full !bg-soft !shadow-none"
+                        iconClassName="h-4 w-4"
                       />
                       {t.name}
-                      <span className="text-xs text-muted">{money(t.amount)}</span>
+                      <span className="fx-num text-xs text-muted">{money(t.amount)}</span>
                     </button>
                   )
                 })}
@@ -306,16 +292,28 @@ export function MovimientosPage() {
             </div>
           )}
 
-          <Card delay={60}>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-              <div className="col-span-2 sm:col-span-1">
-                <Select
-                  label="Período"
-                  value={filters.period}
-                  onChange={(value) => setFilter('period', value as PeriodMode)}
-                  options={PERIOD_OPTIONS}
-                />
-              </div>
+          <FxCard className="fx-enter">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Segmented
+                label="Período"
+                role="radio"
+                variant="plain"
+                inline
+                options={PERIOD_OPTIONS}
+                value={filters.period}
+                onChange={(value) => setFilter('period', value)}
+              />
+              <Segmented
+                label="Tipo"
+                role="radio"
+                variant="plain"
+                inline
+                options={TYPE_OPTIONS}
+                value={filters.type}
+                onChange={(value) => setFilter('type', value)}
+              />
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {filters.period === 'month' && (
                 <div className="col-span-2 sm:col-span-1">
                   <TextField
@@ -345,18 +343,14 @@ export function MovimientosPage() {
                   />
                 </>
               )}
-              <Select
-                label="Tipo"
-                value={filters.type}
-                onChange={(value) => setFilter('type', value as TransactionFilters['type'])}
-                options={TYPE_OPTIONS}
-              />
-              <Select
-                label="Categoría"
-                value={filters.categoryId}
-                onChange={(value) => setFilter('categoryId', value)}
-                options={categoryOptions}
-              />
+              <div className="col-span-2 sm:col-span-1">
+                <Select
+                  label="Categoría"
+                  value={filters.categoryId}
+                  onChange={(value) => setFilter('categoryId', value)}
+                  options={categoryOptions}
+                />
+              </div>
               <div className="col-span-2">
                 <TextField
                   label="Buscar por nombre o descripción"
@@ -381,68 +375,53 @@ export function MovimientosPage() {
               />
             </div>
             {filtersActive && (
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="text-sm font-semibold text-link hover:text-link-hover"
-                >
-                  Limpiar filtros
-                </button>
-              </div>
+              <FxButton variant="link" className="mt-4" onClick={clearFilters}>
+                Limpiar filtros
+              </FxButton>
             )}
-          </Card>
+          </FxCard>
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-3">
-            <StatCard
-              label="Ingresos"
-              value={money(totals.income)}
-              hint="De los movimientos filtrados"
-              icon="M12 19V5M5 12l7-7 7 7"
-              delay={120}
-            />
-            <StatCard
-              label="Gastos"
-              value={money(totals.expense)}
-              hint="De los movimientos filtrados"
-              icon="M12 5v14M5 12l7 7 7-7"
-              delay={200}
-            />
-            <StatCard
-              label="Balance"
-              value={money(totals.balance)}
-              hint="Ingresos menos gastos"
-              icon="M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2"
-              delay={280}
-            />
+          <div className="fx-card fx-enter mt-4">
+            <div className="fx-grid-stats" data-cols="3">
+              <StatCard
+                label="Ingresos"
+                value={money(totals.income)}
+                sub="De los movimientos filtrados"
+                icon="M12 19V5M5 12l7-7 7 7"
+                tone="positive"
+              />
+              <StatCard label="Gastos" value={money(totals.expense)} sub="De los movimientos filtrados" icon="M12 5v14M5 12l7 7 7-7" />
+              <StatCard
+                label="Balance"
+                value={money(totals.balance)}
+                sub="Ingresos menos gastos"
+                icon="M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2"
+              />
+            </div>
           </div>
 
           {notice && (
-            <div className="mt-5">
+            <div className="mt-4">
               <Alert tone="success">{notice}</Alert>
             </div>
           )}
           {actionError && (
-            <div className="mt-5">
+            <div className="mt-4">
               <Alert tone="error">{actionError}</Alert>
             </div>
           )}
 
-          <Card className="mt-5" delay={340}>
+          <FxCard className="fx-enter mt-4">
             {transactionsQuery.error ? (
               <div className="space-y-3">
                 <Alert tone="error">{transactionsQuery.error}</Alert>
-                <button
-                  type="button"
-                  onClick={transactionsQuery.reload}
-                  className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50"
-                >
+                <FxButton variant="soft" size="sm" onClick={transactionsQuery.reload}>
                   Reintentar
-                </button>
+                </FxButton>
               </div>
             ) : transactionsQuery.loading && !transactionsQuery.data ? (
               <div className="flex justify-center py-12">
-                <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+                <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
               </div>
             ) : transactions.length === 0 ? (
               <EmptyState
@@ -456,84 +435,76 @@ export function MovimientosPage() {
               />
             ) : (
               <>
-                <p className="mb-2 text-xs text-muted">
+                <Eyebrow as="p">
                   {transactions.length} movimiento{transactions.length === 1 ? '' : 's'}
-                  {truncated && ` (se muestran los primeros ${SEARCH_LIMIT}; acota los filtros para ver el resto)`}
-                </p>
-                <ul className="divide-y divide-line">
-                  {shown.map((t) => {
-                    const category = t.category_id ? categoryById.get(t.category_id) : undefined
-                    const isIncome = t.type === 'income'
-                    return (
-                      <li key={t.id} className="flex items-center gap-3 py-3">
-                        <CategoryBadge icon={category?.icon} color={category?.color} />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-ink">
-                            {t.name || t.description || category?.name || 'Sin categoría'}
-                          </p>
-                          <p className="truncate text-xs text-muted">
-                            {formatDate(t.occurred_on)} · {category?.name ?? 'Sin categoría'}
-                            {t.recurring_id ? ' · Programado' : ''}
-                          </p>
-                          {t.name && t.description && (
-                            <p className="truncate text-xs text-muted/80">{t.description}</p>
-                          )}
-                        </div>
-                        <div className="flex shrink-0 flex-col items-end sm:flex-row sm:items-center">
-                        <p
-                          className={`text-sm font-semibold sm:mr-1 ${
-                            isIncome ? 'text-link' : 'text-red-600 dark:text-red-400'
-                          }`}
-                        >
-                          {isIncome ? '+' : '−'}
-                          {money(t.amount)}
-                        </p>
-                        <div className="-mr-1.5 flex sm:mr-0">
-                        <button
-                          type="button"
-                          onClick={() => void saveAsTemplate(t)}
-                          aria-label="Guardar como plantilla"
-                          title="Guardar como plantilla"
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-amber-500/10 hover:text-amber-600"
-                        >
-                          <Icon path={STAR} className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setFormState({ open: true, editing: t })}
-                          aria-label="Editar movimiento"
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
-                        >
-                          <Icon path={EDIT} className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setToDelete(t)}
-                          aria-label="Eliminar movimiento"
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
-                        >
-                          <Icon path={TRASH} className="h-4 w-4" />
-                        </button>
-                        </div>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
+                  {truncated && ` · se muestran los primeros ${SEARCH_LIMIT}; acota los filtros`}
+                </Eyebrow>
+                {groupByDay(shown).map(([day, items]) => (
+                  <div key={day}>
+                    <GroupLabel>{formatDate(day)}</GroupLabel>
+                    <List variant="flat">
+                      {items.map((t) => {
+                        const category = t.category_id ? categoryById.get(t.category_id) : undefined
+                        return (
+                          <ListRow
+                            key={t.id}
+                            media={
+                              <CategoryBadge
+                                icon={category?.icon}
+                                color={category?.color}
+                                className="h-full w-full !shadow-none"
+                                iconClassName="h-[18px] w-[18px]"
+                              />
+                            }
+                            title={t.name || t.description || category?.name || 'Sin categoría'}
+                            sub={`${category?.name ?? 'Sin categoría'}${t.recurring_id ? ' · Programado' : ''}`}
+                            extra={t.name && t.description ? t.description : undefined}
+                            amount={money(t.amount)}
+                            sign={t.type === 'income' ? '+' : '-'}
+                            side={
+                              <span className="-mr-2 mt-0.5 flex justify-end">
+                                <IconButton
+                                  icon={STAR}
+                                  label="Guardar como plantilla"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => void saveAsTemplate(t)}
+                                />
+                                <IconButton
+                                  icon={EDIT}
+                                  label="Editar movimiento"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setFormState({ open: true, editing: t })}
+                                />
+                                <IconButton
+                                  icon={TRASH}
+                                  label="Eliminar movimiento"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setToDelete(t)}
+                                />
+                              </span>
+                            }
+                          />
+                        )
+                      })}
+                    </List>
+                  </div>
+                ))}
                 {visible < transactions.length && (
-                  <div className="mt-4 flex justify-center">
-                    <button
-                      type="button"
+                  <div className="mt-5 flex justify-center">
+                    <FxButton
+                      variant="soft"
                       onClick={() => setVisibleState({ data: transactionsQuery.data, count: visible + PAGE_SIZE })}
-                      className="rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-50"
                     >
                       Mostrar más ({transactions.length - visible} restantes)
-                    </button>
+                    </FxButton>
                   </div>
                 )}
               </>
             )}
-          </Card>
+          </FxCard>
         </>
       )}
 

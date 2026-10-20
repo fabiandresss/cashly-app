@@ -107,7 +107,7 @@ export function SavingsSimulator({
         {!result ? (
           <p className="text-sm text-muted">Completa el monto objetivo y tu aporte mensual para ver la proyección.</p>
         ) : result.sim.months === null ? (
-          <p className="text-sm font-medium text-red-600 dark:text-red-400">
+          <p className="text-sm font-medium text-danger">
             Con ese aporte no se alcanza el objetivo en 50 años. Prueba aumentando el aporte mensual.
           </p>
         ) : result.sim.months === 0 ? (
@@ -121,7 +121,7 @@ export function SavingsSimulator({
             {diff !== null && (
               <p
                 className={`mt-2 text-sm font-medium ${
-                  diff >= 0 ? 'text-link' : 'text-red-600 dark:text-red-400'
+                  diff >= 0 ? 'text-link' : 'text-danger'
                 }`}
               >
                 {diff >= 0

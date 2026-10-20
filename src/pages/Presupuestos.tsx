@@ -130,14 +130,14 @@ export function PresupuestosPage() {
         <div className="flex items-center gap-3">
           <CategoryBadge icon={category?.icon} color={category?.color} />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-heading">{category?.name ?? 'Categoría'}</p>
+            <p className="truncate text-[15px] font-semibold tracking-tight text-ink">{category?.name ?? 'Categoría'}</p>
             <p className={`text-xs font-medium ${styles.text}`}>{styles.label}</p>
           </div>
           <button
             type="button"
             onClick={() => setFormState({ open: true, editing: budget })}
             aria-label={`Editar presupuesto de ${category?.name ?? 'categoría'}`}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
           >
             <Icon path={EDIT} className="h-4 w-4" />
           </button>
@@ -145,13 +145,13 @@ export function PresupuestosPage() {
             type="button"
             onClick={() => setToDelete(budget)}
             aria-label={`Eliminar presupuesto de ${category?.name ?? 'categoría'}`}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
           >
             <Icon path={TRASH} className="h-4 w-4" />
           </button>
         </div>
         <div className="mt-4 flex items-baseline justify-between text-sm">
-          <span className="font-semibold text-ink">{money(used)}</span>
+          <span className="fx-num text-lg font-semibold tracking-tight text-ink">{money(used)}</span>
           <span className="text-muted">de {money(budget.amount)}</span>
         </div>
         <div className="mt-2">
@@ -175,7 +175,7 @@ export function PresupuestosPage() {
         <button
           type="button"
           onClick={() => setFormState({ open: true })}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
+          className="fx-btn fx-btn--accent w-full sm:w-auto"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nuevo presupuesto
@@ -183,23 +183,23 @@ export function PresupuestosPage() {
       </div>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="flex w-full items-center rounded-xl bg-surface p-1 shadow-card ring-1 ring-line sm:inline-flex sm:w-auto">
+        <div className="flex w-full items-center rounded-full bg-surface p-1 shadow-card sm:inline-flex sm:w-auto">
           <button
             type="button"
             onClick={() => setMonth((m) => shiftMonth(m, -1))}
             aria-label="Mes anterior"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
           >
             <Icon path={CHEVRON_LEFT} className="h-5 w-5" />
           </button>
-          <span className="min-w-0 flex-1 px-2 text-center sm:min-w-40 sm:flex-none text-sm font-semibold text-heading first-letter:uppercase">
+          <span className="min-w-0 flex-1 px-2 text-center sm:min-w-40 sm:flex-none text-[15px] font-semibold tracking-tight text-ink first-letter:uppercase">
             {monthTitle(month)}
           </span>
           <button
             type="button"
             onClick={() => setMonth((m) => shiftMonth(m, 1))}
             aria-label="Mes siguiente"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
           >
             <Icon path={CHEVRON_RIGHT} className="h-5 w-5" />
           </button>
@@ -217,7 +217,7 @@ export function PresupuestosPage() {
           type="button"
           onClick={handleCopy}
           disabled={copying}
-          className="w-full rounded-xl border border-line bg-surface px-4 py-2.5 sm:ml-auto sm:w-auto text-sm font-semibold text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
+          className="fx-btn fx-btn--soft w-full sm:ml-auto sm:w-auto disabled:opacity-60"
         >
           {copying ? 'Copiando…' : 'Copiar del mes anterior'}
         </button>
@@ -229,7 +229,7 @@ export function PresupuestosPage() {
           <button
             type="button"
             onClick={reloadAll}
-            className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50"
+            className="fx-btn fx-btn--soft fx-btn--sm"
           >
             Reintentar
           </button>
@@ -246,7 +246,7 @@ export function PresupuestosPage() {
         </div>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="fx-card fx-enter fx-grid-stats mb-4" data-cols="3">
         <StatCard
           label={totalBudget ? 'Presupuesto total' : 'Suma de presupuestos'}
           value={money(limit)}
@@ -283,7 +283,7 @@ export function PresupuestosPage() {
               type="button"
               onClick={() => setFormState({ open: true, editing: totalBudget })}
               aria-label="Editar presupuesto total"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+              className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
             >
               <Icon path={EDIT} className="h-4 w-4" />
             </button>
@@ -291,13 +291,13 @@ export function PresupuestosPage() {
               type="button"
               onClick={() => setToDelete(totalBudget)}
               aria-label="Eliminar presupuesto total"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+              className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
             >
               <Icon path={TRASH} className="h-4 w-4" />
             </button>
           </div>
           <div className="mt-4 flex items-baseline justify-between text-sm">
-            <span className="font-semibold text-ink">{money(spent.total)}</span>
+            <span className="fx-num text-lg font-semibold tracking-tight text-ink">{money(spent.total)}</span>
             <span className="text-muted">de {money(totalBudget.amount)}</span>
           </div>
           <div className="mt-2">
@@ -312,7 +312,7 @@ export function PresupuestosPage() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
         </div>
       ) : categoryBudgets.length === 0 && !totalBudget ? (
         <Card className="mt-5" delay={300}>

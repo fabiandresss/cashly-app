@@ -64,7 +64,7 @@ function ContributionHistory({ goal, onChanged }: { goal: SavingsGoal; onChanged
   if (query.loading && !query.data) {
     return (
       <div className="flex justify-center py-8">
-        <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+        <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
       </div>
     )
   }
@@ -74,7 +74,7 @@ function ContributionHistory({ goal, onChanged }: { goal: SavingsGoal; onChanged
   return (
     <div className="space-y-3">
       {error && <Alert tone="error">{error}</Alert>}
-      <ul className="divide-y divide-line">
+      <ul className="fx-list fx-list--flat">
         {items.map((c) => (
           <li key={c.id} className="flex items-center gap-3 py-2.5">
             <div className="min-w-0 flex-1">
@@ -83,7 +83,7 @@ function ContributionHistory({ goal, onChanged }: { goal: SavingsGoal; onChanged
             </div>
             <p
               className={`shrink-0 text-sm font-semibold ${
-                c.amount > 0 ? 'text-link' : 'text-red-600 dark:text-red-400'
+                c.amount > 0 ? 'text-positive' : 'text-ink'
               }`}
             >
               {c.amount > 0 ? '+' : '−'}
@@ -93,7 +93,7 @@ function ContributionHistory({ goal, onChanged }: { goal: SavingsGoal; onChanged
               type="button"
               onClick={() => void remove(c.id)}
               aria-label="Eliminar registro"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+              className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
             >
               <Icon path={TRASH} className="h-4 w-4" />
             </button>
@@ -132,7 +132,7 @@ export function MetasPage() {
           <button
             type="button"
             onClick={() => setSimulating({ open: true })}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink shadow-card sm:flex-none transition-colors hover:bg-brand-50"
+            className="fx-btn fx-btn--soft flex-1 sm:flex-none"
           >
             <Icon path={CALC} className="h-4 w-4" />
             Simulador
@@ -140,7 +140,7 @@ export function MetasPage() {
           <button
             type="button"
             onClick={() => setForm({ open: true })}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:flex-none"
+            className="fx-btn fx-btn--accent flex-1 sm:flex-none"
           >
             <Icon path={PLUS} className="h-4 w-4" />
             Nueva meta
@@ -154,7 +154,7 @@ export function MetasPage() {
           <button
             type="button"
             onClick={query.reload}
-            className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50"
+            className="fx-btn fx-btn--soft fx-btn--sm"
           >
             Reintentar
           </button>
@@ -162,7 +162,7 @@ export function MetasPage() {
       )}
 
       {goals.length > 0 && (
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="fx-card fx-enter fx-grid-stats mb-4" data-cols="3">
           <StatCard label="Ahorrado en metas" value={money(totalSaved)} hint="Suma de todas tus metas" icon={TARGET} delay={60} />
           <StatCard
             label="Objetivo total"
@@ -183,7 +183,7 @@ export function MetasPage() {
 
       {query.loading && !query.data ? (
         <div className="flex justify-center py-16">
-          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
         </div>
       ) : goals.length === 0 && !query.error ? (
         <Card className="mt-5" delay={100}>
@@ -204,7 +204,7 @@ export function MetasPage() {
                 <div className="flex items-center gap-3">
                   <CategoryBadge icon={goal.icon} color={goal.color} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-heading">{goal.name}</p>
+                    <p className="truncate text-[15px] font-semibold tracking-tight text-ink">{goal.name}</p>
                     <p className="text-xs text-muted">
                       {done
                         ? '¡Meta cumplida!'
@@ -217,7 +217,7 @@ export function MetasPage() {
                     type="button"
                     onClick={() => setForm({ open: true, editing: goal })}
                     aria-label={`Editar ${goal.name}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                   >
                     <Icon path={EDIT} className="h-4 w-4" />
                   </button>
@@ -225,14 +225,14 @@ export function MetasPage() {
                     type="button"
                     onClick={() => setToDelete(goal)}
                     aria-label={`Eliminar ${goal.name}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>
                 </div>
 
                 <div className="mt-4 flex items-baseline justify-between text-sm">
-                  <span className="font-semibold text-ink">{money(goal.saved)}</span>
+                  <span className="fx-num text-lg font-semibold tracking-tight text-ink">{money(goal.saved)}</span>
                   <span className="text-muted">de {money(goal.target_amount)}</span>
                 </div>
                 <div
@@ -241,7 +241,7 @@ export function MetasPage() {
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(Math.min(ratio, 1) * 100)}
-                  className="mt-2 h-2.5 overflow-hidden rounded-full bg-canvas"
+                  className="mt-2 h-2 overflow-hidden rounded-full bg-mute"
                 >
                   <div
                     className="h-full rounded-full transition-all duration-700"
@@ -257,14 +257,14 @@ export function MetasPage() {
                   <button
                     type="button"
                     onClick={() => setContributing(goal)}
-                    className="rounded-xl bg-brand-700 px-3 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600"
+                    className="fx-btn fx-btn--primary"
                   >
                     Aportar / retirar
                   </button>
                   <button
                     type="button"
                     onClick={() => setHistory(goal)}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-line px-3 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-50"
+                    className="fx-btn fx-btn--soft"
                   >
                     <Icon path={CLOCK} className="h-4 w-4" />
                     Historial
@@ -274,7 +274,7 @@ export function MetasPage() {
                   <button
                     type="button"
                     onClick={() => setSimulating({ open: true, goal })}
-                    className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-link transition-colors hover:bg-brand-50"
+                    className="fx-btn fx-btn--soft fx-btn--sm mt-3 w-full"
                   >
                     <Icon path={CALC} className="h-4 w-4" />
                     Simular cuándo llego
