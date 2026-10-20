@@ -51,7 +51,7 @@ function dueInfo(dueISO: string | null): { text: string; tone: 'danger' | 'warni
 
 const TONE_CLASS = {
   danger: 'text-danger',
-  warning: 'text-amber-600 dark:text-amber-400',
+  warning: 'text-[var(--warning)]',
   normal: 'text-muted',
 } as const
 

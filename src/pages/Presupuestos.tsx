@@ -274,7 +274,7 @@ export function PresupuestosPage() {
         <Card className="mt-5" delay={300}>
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold text-heading">Presupuesto total del mes</h2>
+              <h2 className="fx-card__title">Presupuesto total del mes</h2>
               <p className={`text-xs font-medium ${STATUS_STYLES[totalStatus].text}`}>
                 {STATUS_STYLES[totalStatus].label}
               </p>

@@ -58,12 +58,12 @@ function TypingIndicator() {
   return (
     <div className="flex items-end gap-2.5" role="status" aria-label={`Cashly AI está pensando, ${seconds} segundos`}>
       <AiAvatar className="h-9 w-9" />
-      <div className="flex items-center gap-3 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5 shadow-card">
+      <div className="flex items-center gap-3 rounded-[20px] rounded-bl-md bg-surface px-4 py-3.5 shadow-card">
         <div className="flex gap-1.5">
           {[0, 150, 300].map((delay) => (
             <span
               key={delay}
-              className="h-2 w-2 animate-bounce rounded-full bg-brand-500"
+              className="h-2 w-2 animate-bounce rounded-full bg-ink"
               style={{ animationDelay: `${delay}ms` }}
             />
           ))}
@@ -279,7 +279,7 @@ export function AsistentePage() {
                       key={suggestion}
                       type="button"
                       onClick={() => void send(suggestion)}
-                      className={`rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50 hover:shadow-lift ${
+                      className={`rounded-full bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-card transition-all hover:-translate-y-0.5 hover:shadow-lift ${
                         i >= 3 ? 'hidden sm:inline-flex' : ''
                       }`}
                     >
@@ -292,7 +292,7 @@ export function AsistentePage() {
               messages.map((message, index) =>
                 message.role === 'user' ? (
                   <div key={index} className="flex justify-end">
-                    <p className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-brand-700 px-4 py-3 text-sm text-white shadow-card">
+                    <p className="max-w-[85%] whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-[var(--surface-inverse)] px-4 py-3 text-sm text-[var(--ink-inverse)]">
                       {message.content}
                     </p>
                   </div>
@@ -300,7 +300,7 @@ export function AsistentePage() {
                   <div key={index} className="space-y-3">
                     <div className="flex items-end gap-2.5">
                       <AiAvatar className="h-9 w-9" still />
-                      <div className="max-w-[85%] break-words rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-ink shadow-card">
+                      <div className="max-w-[85%] break-words rounded-[20px] rounded-bl-md bg-surface px-4 py-3 text-sm leading-relaxed text-ink shadow-card">
                         <RichText text={message.content} />
                       </div>
                     </div>
@@ -345,13 +345,13 @@ export function AsistentePage() {
           </div>
 
           {warning && (
-            <p className="mb-2 shrink-0 text-xs text-amber-700 dark:text-amber-400" role="status">
+            <p className="mb-2 shrink-0 text-xs text-[var(--warning)]" role="status">
               {warning}
             </p>
           )}
 
           <form onSubmit={handleSubmit} className="shrink-0">
-            <div className="rounded-2xl border border-line bg-surface p-3 shadow-lift">
+            <div className="rounded-[var(--r-lg)] bg-surface p-3 shadow-[var(--shadow-2)] transition-shadow focus-within:shadow-[var(--shadow-2),0_0_0_4px_var(--accent-soft)]">
               <div className="flex items-end gap-3">
                 <label htmlFor="assistant-input" className="sr-only">
                   Escribe tu pregunta
@@ -364,7 +364,7 @@ export function AsistentePage() {
                   onKeyDown={handleKeyDown}
                   rows={2}
                   placeholder="Escribe tu pregunta…"
-                  className="min-h-[3rem] flex-1 resize-none bg-transparent px-2 py-2 text-sm text-ink outline-none placeholder:text-muted/75"
+                  className="min-h-[3rem] flex-1 resize-none bg-transparent px-2 py-2 text-[15px] text-ink outline-none placeholder:text-faint focus-visible:outline-none"
                 />
                 <button
                   type="submit"

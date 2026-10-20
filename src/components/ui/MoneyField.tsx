@@ -48,7 +48,7 @@ export function MoneyField({ label, value, onChange, error, name }: MoneyFieldPr
         {label}
       </label>
       <div className="relative">
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex w-9 items-center justify-end text-base font-medium text-faint">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex w-[34px] items-center justify-end text-base font-medium text-faint">
           $
         </span>
         <input

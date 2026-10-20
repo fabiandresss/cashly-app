@@ -48,7 +48,7 @@ export function ConversationHistory({
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {error ? (
-          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200">
+          <p className="fx-alert fx-alert--error text-xs">
             {error}
           </p>
         ) : loading && conversations.length === 0 ? (
@@ -69,8 +69,8 @@ export function ConversationHistory({
                     aria-current={active ? 'true' : undefined}
                     className={`w-full rounded-xl border px-3 py-2.5 pr-10 text-left transition-all ${
                       active
-                        ? 'border-brand-500 bg-brand-50 shadow-card'
-                        : 'border-line bg-surface hover:border-brand-200 hover:bg-brand-50/60'
+                        ? 'border-transparent bg-[var(--surface-mute)]'
+                        : 'border-transparent hover:bg-soft'
                     }`}
                   >
                     <span className="block truncate text-sm font-medium text-ink">{c.title}</span>

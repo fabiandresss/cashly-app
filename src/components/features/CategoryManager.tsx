@@ -29,7 +29,7 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (col
           onClick={() => onChange(color)}
           style={{ backgroundColor: color }}
           className={`h-7 w-7 rounded-full transition-transform hover:scale-110 ${
-            value === color ? 'ring-2 ring-offset-2 ring-offset-surface ring-brand-500' : ''
+            value === color ? 'ring-2 ring-offset-2 ring-offset-surface ring-ink' : ''
           }`}
         />
       ))}
@@ -65,7 +65,7 @@ export function IconPicker({
             onClick={() => onChange(key)}
             style={active ? { backgroundColor: color, color: '#fff' } : undefined}
             className={`flex h-10 items-center justify-center rounded-xl border transition-all ${
-              active ? 'border-transparent shadow-card' : 'border-line text-muted hover:border-brand-200 hover:text-ink'
+              active ? 'border-transparent shadow-card' : 'border-line text-muted hover:text-ink'
             }`}
           >
             <Icon path={iconPath(key)} className="h-5 w-5" />
@@ -152,7 +152,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <Card className="lg:col-span-1" delay={80}>
-        <h2 className="text-base font-semibold text-heading">Nueva categoría</h2>
+        <h2 className="fx-card__title">Nueva categoría</h2>
         <form onSubmit={handleCreate} noValidate className="mt-4 space-y-4">
           {formError && <Alert tone="error">{formError}</Alert>}
           <TypeToggle value={type} onChange={setType} />
@@ -184,7 +184,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
           const items = categories.filter((c) => c.type === group.type)
           return (
             <Card key={group.type} delay={160 + index * 80}>
-              <h2 className="text-base font-semibold text-heading">
+              <h2 className="fx-card__title">
                 {group.title} <span className="text-sm font-normal text-muted">({items.length})</span>
               </h2>
               {items.length === 0 ? (

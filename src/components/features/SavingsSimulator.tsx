@@ -103,7 +103,7 @@ export function SavingsSimulator({
         Déjalo en 0 si guardas el dinero sin invertirlo. Es una estimación, no una promesa de rentabilidad.
       </p>
 
-      <div className="rounded-2xl border border-line bg-canvas p-4" aria-live="polite">
+      <div className="fx-card fx-card--soft !p-4" aria-live="polite">
         {!result ? (
           <p className="text-sm text-muted">Completa el monto objetivo y tu aporte mensual para ver la proyección.</p>
         ) : result.sim.months === null ? (
@@ -111,7 +111,7 @@ export function SavingsSimulator({
             Con ese aporte no se alcanza el objetivo en 50 años. Prueba aumentando el aporte mensual.
           </p>
         ) : result.sim.months === 0 ? (
-          <p className="text-sm font-semibold text-heading">¡Ya alcanzaste este objetivo!</p>
+          <p className="text-sm font-semibold text-ink">¡Ya alcanzaste este objetivo!</p>
         ) : (
           <>
             <p className="text-sm text-muted">Llegarías a tu objetivo en</p>

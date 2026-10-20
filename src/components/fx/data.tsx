@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { Eyebrow } from '@/components/fx/primitives'
 import { cx, splitMoney } from '@/components/fx/utils'
@@ -33,8 +33,17 @@ export function Segmented<T extends string>({
   className,
 }: SegmentedProps<T>) {
   const isRadio = role === 'radio'
+  const ref = useRef<HTMLDivElement>(null)
+  // En pantallas angostas el control puede desplazarse: mantiene visible la opción activa.
+  useEffect(() => {
+    const el = ref.current
+    const active = el?.querySelector<HTMLElement>('[aria-selected="true"],[aria-checked="true"]')
+    if (!el || !active || el.scrollWidth <= el.clientWidth) return
+    el.scrollTo({ left: active.offsetLeft - (el.clientWidth - active.offsetWidth) / 2, behavior: 'smooth' })
+  }, [value])
   return (
     <div
+      ref={ref}
       role={isRadio ? 'radiogroup' : 'tablist'}
       aria-label={label}
       className={cx(

@@ -49,6 +49,7 @@
   --hero-gradient:
     radial-gradient(120% 40% at 50% 100%, rgba(214, 246, 230, 0.9) 0%, rgba(214, 246, 230, 0) 70%),
     linear-gradient(180deg, #053b2b 0%, #0a5540 38%, #12936a 68%, #7fdcb6 88%, #e9f8f1 100%);
+  --auth-gradient: linear-gradient(180deg, #053b2b 0%, #0a5540 45%, #12936a 80%, #2fbf8a 100%);
   --hero-ink: #ffffff;
   --hero-ink-2: rgba(255, 255, 255, 0.78);
 

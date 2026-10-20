@@ -32,7 +32,7 @@ export function BudgetAlertSettings() {
 
   return (
     <Card className="lg:col-span-2" delay={280}>
-      <h2 className="text-base font-semibold text-heading">Alertas de presupuesto</h2>
+      <h2 className="fx-card__title">Alertas de presupuesto</h2>
       <p className="mt-0.5 text-xs text-muted">
         Un presupuesto pasa a “cerca del límite” cuando alcanzas este porcentaje de gasto.
       </p>
@@ -56,12 +56,12 @@ export function BudgetAlertSettings() {
             aria-label="Umbral de alerta de presupuesto"
             className="h-2 flex-1 cursor-pointer accent-brand-600"
           />
-          <span className="w-16 rounded-xl border border-line bg-canvas py-2 text-center text-sm font-semibold tabular-nums text-heading">
+          <span className="w-16 rounded-full bg-soft py-2 text-center text-sm font-semibold tabular-nums text-ink">
             {value}%
           </span>
         </div>
         <div className="sm:max-w-xs">
-          <Button type="button" onClick={handleSave} loading={saving} disabled={draft === null}>
+          <Button type="button" variant="primary" onClick={handleSave} loading={saving} disabled={draft === null}>
             Guardar umbral
           </Button>
         </div>
