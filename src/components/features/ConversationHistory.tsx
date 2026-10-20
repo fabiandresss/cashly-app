@@ -38,13 +38,13 @@ export function ConversationHistory({
       <button
         type="button"
         onClick={onNew}
-        className="fx-btn fx-btn--accent mb-3 shrink-0"
+        className="fx-btn fx-btn--primary mb-4 shrink-0"
       >
         <Icon path={PLUS} className="h-4 w-4" />
         Nueva conversación
       </button>
 
-      <p className="mb-2 shrink-0 px-1 text-xs font-semibold uppercase tracking-wide text-muted">Historial</p>
+      <p className="fx-eyebrow mb-2 shrink-0 px-1">Historial</p>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {error ? (
@@ -67,7 +67,7 @@ export function ConversationHistory({
                     type="button"
                     onClick={() => onSelect(c.id)}
                     aria-current={active ? 'true' : undefined}
-                    className={`w-full rounded-xl border px-3 py-2.5 pr-10 text-left transition-all ${
+                    className={`w-full rounded-[var(--r-sm)] border px-3 py-2.5 pr-11 text-left transition-all ${
                       active
                         ? 'border-transparent bg-[var(--surface-mute)]'
                         : 'border-transparent hover:bg-soft'
@@ -80,7 +80,7 @@ export function ConversationHistory({
                     type="button"
                     onClick={() => onDelete(c)}
                     aria-label={`Eliminar conversación ${c.title}`}
-                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm absolute right-1 top-1/2 -translate-y-1/2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>

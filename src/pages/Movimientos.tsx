@@ -462,7 +462,7 @@ export function MovimientosPage() {
                             amount={money(t.amount)}
                             sign={t.type === 'income' ? '+' : '-'}
                             side={
-                              <span className="-mr-2 mt-0.5 flex justify-end">
+                              <span className="fx-row__inline -mr-2 mt-0.5 flex justify-end">
                                 <IconButton
                                   icon={STAR}
                                   label="Guardar como plantilla"
