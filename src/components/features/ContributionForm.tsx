@@ -50,7 +50,7 @@ export function ContributionForm({ available, onSubmit }: ContributionFormProps)
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {formError && <Alert tone="error">{formError}</Alert>}
-      <div role="radiogroup" aria-label="Operación" className="grid grid-cols-2 gap-1 rounded-xl bg-canvas p-1">
+      <div role="radiogroup" aria-label="Operación" className="fx-segmented fx-segmented--plain">
         {(
           [
             ['add', 'Aportar'],
@@ -63,9 +63,7 @@ export function ContributionForm({ available, onSubmit }: ContributionFormProps)
             role="radio"
             aria-checked={mode === value}
             onClick={() => setMode(value)}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition-all ${
-              mode === value ? 'bg-surface text-heading shadow-card' : 'text-muted hover:text-ink'
-            }`}
+            className="fx-segmented__item"
           >
             {label}
           </button>

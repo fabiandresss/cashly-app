@@ -29,7 +29,7 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (col
           onClick={() => onChange(color)}
           style={{ backgroundColor: color }}
           className={`h-7 w-7 rounded-full transition-transform hover:scale-110 ${
-            value === color ? 'ring-2 ring-offset-2 ring-offset-surface ring-brand-500' : ''
+            value === color ? 'ring-2 ring-offset-2 ring-offset-surface ring-ink' : ''
           }`}
         />
       ))}
@@ -65,7 +65,7 @@ export function IconPicker({
             onClick={() => onChange(key)}
             style={active ? { backgroundColor: color, color: '#fff' } : undefined}
             className={`flex h-10 items-center justify-center rounded-xl border transition-all ${
-              active ? 'border-transparent shadow-card' : 'border-line text-muted hover:border-brand-200 hover:text-ink'
+              active ? 'border-transparent shadow-card' : 'border-line text-muted hover:text-ink'
             }`}
           >
             <Icon path={iconPath(key)} className="h-5 w-5" />
@@ -152,7 +152,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <Card className="lg:col-span-1" delay={80}>
-        <h2 className="text-base font-semibold text-heading">Nueva categoría</h2>
+        <h2 className="fx-card__title">Nueva categoría</h2>
         <form onSubmit={handleCreate} noValidate className="mt-4 space-y-4">
           {formError && <Alert tone="error">{formError}</Alert>}
           <TypeToggle value={type} onChange={setType} />
@@ -184,7 +184,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
           const items = categories.filter((c) => c.type === group.type)
           return (
             <Card key={group.type} delay={160 + index * 80}>
-              <h2 className="text-base font-semibold text-heading">
+              <h2 className="fx-card__title">
                 {group.title} <span className="text-sm font-normal text-muted">({items.length})</span>
               </h2>
               {items.length === 0 ? (
@@ -209,14 +209,14 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             <button
                               type="button"
                               onClick={handleSaveEdit}
-                              className="rounded-lg bg-brand-700 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-600"
+                              className="fx-btn fx-btn--accent fx-btn--sm"
                             >
                               Guardar
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditing(null)}
-                              className="rounded-lg border border-line px-3 py-2 text-xs font-semibold text-ink hover:bg-brand-50"
+                              className="fx-btn fx-btn--soft fx-btn--sm"
                             >
                               Cancelar
                             </button>
@@ -235,7 +235,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             type="button"
                             onClick={() => startEdit(category)}
                             aria-label={`Editar ${category.name}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+                            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                           >
                             <Icon path={EDIT} className="h-4 w-4" />
                           </button>
@@ -243,7 +243,7 @@ export function CategoryManager({ categories, onChanged }: CategoryManagerProps)
                             type="button"
                             onClick={() => setToDelete(category)}
                             aria-label={`Eliminar ${category.name}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+                            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm"
                           >
                             <Icon path={TRASH} className="h-4 w-4" />
                           </button>

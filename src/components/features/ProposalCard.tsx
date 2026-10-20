@@ -22,8 +22,8 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
   const settled = status === 'saved' || status === 'dismissed'
 
   return (
-    <div className="ml-[2.9rem] max-w-[85%] rounded-2xl border border-brand-200 bg-brand-50/60 p-4 shadow-card">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+    <div className="ml-[2.9rem] max-w-[85%] rounded-[var(--r-md)] bg-surface p-4 shadow-[var(--shadow-2)]">
+      <p className="fx-eyebrow">
         {status === 'saved'
           ? 'Registrado'
           : status === 'dismissed'
@@ -34,7 +34,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
       <div className="mt-2 flex items-center gap-3">
         <CategoryBadge icon={category?.icon} color={category?.color} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-heading">{proposal.name}</p>
+          <p className="truncate text-sm font-semibold text-ink">{proposal.name}</p>
           <p className="truncate text-xs text-muted">
             {proposal.category_name ?? 'Sin categoría'} · {formatDate(proposal.occurred_on)}
           </p>
@@ -42,7 +42,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
         </div>
         <p
           className={`shrink-0 text-base font-bold ${
-            isIncome ? 'text-link' : 'text-red-600 dark:text-red-400'
+            isIncome ? 'text-positive' : 'text-ink'
           }`}
         >
           {isIncome ? '+' : '−'}
@@ -50,7 +50,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
         </p>
       </div>
 
-      {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
 
       {!settled && (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
             type="button"
             onClick={onConfirm}
             disabled={status === 'saving'}
-            className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-600 disabled:opacity-60"
+            className="fx-btn fx-btn--accent fx-btn--sm disabled:opacity-60"
           >
             {status === 'saving' ? 'Registrando…' : 'Registrar'}
           </button>
@@ -66,7 +66,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
             type="button"
             onClick={onEdit}
             disabled={status === 'saving'}
-            className="rounded-xl border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand-50 disabled:opacity-60"
+            className="fx-btn fx-btn--soft fx-btn--sm disabled:opacity-60"
           >
             Editar
           </button>
@@ -74,7 +74,7 @@ export function ProposalCard({ proposal, status, error, category, onConfirm, onE
             type="button"
             onClick={onDismiss}
             disabled={status === 'saving'}
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-muted transition-colors hover:text-ink disabled:opacity-60"
+            className="fx-btn fx-btn--ghost fx-btn--sm disabled:opacity-60"
           >
             Descartar
           </button>

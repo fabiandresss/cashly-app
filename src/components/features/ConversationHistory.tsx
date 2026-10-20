@@ -38,22 +38,22 @@ export function ConversationHistory({
       <button
         type="button"
         onClick={onNew}
-        className="mb-3 inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift"
+        className="fx-btn fx-btn--primary mb-4 shrink-0"
       >
         <Icon path={PLUS} className="h-4 w-4" />
         Nueva conversación
       </button>
 
-      <p className="mb-2 shrink-0 px-1 text-xs font-semibold uppercase tracking-wide text-muted">Historial</p>
+      <p className="fx-eyebrow mb-2 shrink-0 px-1">Historial</p>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {error ? (
-          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200">
+          <p className="fx-alert fx-alert--error text-xs">
             {error}
           </p>
         ) : loading && conversations.length === 0 ? (
           <div className="flex justify-center py-6">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-500" />
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-mute border-t-ink" />
           </div>
         ) : conversations.length === 0 ? (
           <p className="px-1 text-sm text-muted">Aún no tienes conversaciones guardadas.</p>
@@ -67,10 +67,10 @@ export function ConversationHistory({
                     type="button"
                     onClick={() => onSelect(c.id)}
                     aria-current={active ? 'true' : undefined}
-                    className={`w-full rounded-xl border px-3 py-2.5 pr-10 text-left transition-all ${
+                    className={`w-full rounded-[var(--r-sm)] border px-3 py-2.5 pr-11 text-left transition-all ${
                       active
-                        ? 'border-brand-500 bg-brand-50 shadow-card'
-                        : 'border-line bg-surface hover:border-brand-200 hover:bg-brand-50/60'
+                        ? 'border-transparent bg-[var(--surface-mute)]'
+                        : 'border-transparent hover:bg-soft'
                     }`}
                   >
                     <span className="block truncate text-sm font-medium text-ink">{c.title}</span>
@@ -80,7 +80,7 @@ export function ConversationHistory({
                     type="button"
                     onClick={() => onDelete(c)}
                     aria-label={`Eliminar conversación ${c.title}`}
-                    className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted opacity-100 transition-colors hover:bg-red-500/10 hover:text-red-600 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm absolute right-1 top-1/2 -translate-y-1/2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>

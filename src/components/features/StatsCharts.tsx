@@ -2,8 +2,6 @@ import { useMoney } from '@/hooks/useMoney'
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Pie,
@@ -16,14 +14,15 @@ import {
 
 
 const tooltipStyle = {
-  background: 'var(--color-surface)',
-  border: '1px solid var(--color-line)',
-  borderRadius: 12,
-  color: 'var(--color-ink)',
-  boxShadow: 'var(--shadow-lift)',
+  background: 'var(--surface)',
+  border: 'none',
+  borderRadius: 14,
+  color: 'var(--ink)',
+  boxShadow: 'var(--shadow-2)',
+  fontSize: 13,
 }
-const labelStyle = { color: 'var(--color-heading)', fontWeight: 600 }
-const axisTick = { fill: 'var(--color-muted)', fontSize: 12 }
+const labelStyle = { color: 'var(--ink-2)', fontFamily: 'var(--font-mono)', fontSize: 10.5, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }
+const axisTick = { fill: 'var(--ink-3)', fontSize: 10.5, fontFamily: 'var(--font-mono)' }
 
 // ---------- Dona ----------
 
@@ -43,9 +42,10 @@ export function DonutChart({ data, centerLabel, centerValue }: { data: readonly 
             data={[...data]}
             dataKey="value"
             nameKey="name"
-            innerRadius="62%"
-            outerRadius="92%"
+            innerRadius="70%"
+            outerRadius="94%"
             paddingAngle={2}
+            cornerRadius={6}
             stroke="none"
           >
             {data.map((d) => (
@@ -60,8 +60,8 @@ export function DonutChart({ data, centerLabel, centerValue }: { data: readonly 
         </PieChart>
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-xs text-muted">{centerLabel}</span>
-        <span className="text-lg font-bold text-heading">{centerValue}</span>
+        <span className="fx-eyebrow">{centerLabel}</span>
+        <span className="fx-num mt-1 text-xl font-semibold tracking-tight text-ink">{centerValue}</span>
       </div>
     </div>
   )
@@ -77,11 +77,11 @@ export function BalanceChart({ data }: { data: readonly { label: string; balance
         <AreaChart data={[...data]} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="balanceFill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+              <stop offset="0%" stopColor="#00bb77" stopOpacity={0.28} />
+              <stop offset="100%" stopColor="#00bb77" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="var(--color-line)" />
+          <CartesianGrid vertical={false} stroke="var(--line)" />
           <XAxis dataKey="label" tickLine={false} axisLine={false} tick={axisTick} />
           <YAxis
             tickLine={false}
@@ -91,6 +91,7 @@ export function BalanceChart({ data }: { data: readonly { label: string; balance
             tick={axisTick}
           />
           <Tooltip
+            cursor={{ stroke: 'var(--ink)', strokeWidth: 1.5 }}
             formatter={(value) => [money(Number(value ?? 0)), 'Saldo']}
             contentStyle={tooltipStyle}
             labelStyle={labelStyle}
@@ -98,47 +99,13 @@ export function BalanceChart({ data }: { data: readonly { label: string; balance
           <Area
             type="monotone"
             dataKey="balance"
-            stroke="#10b981"
-            strokeWidth={2.5}
+            stroke="var(--ink)"
+            strokeWidth={2}
             fill="url(#balanceFill)"
-            dot={{ r: 3, fill: '#10b981', strokeWidth: 0 }}
+            dot={false}
+            activeDot={{ r: 5, fill: 'var(--accent)', stroke: 'var(--surface)', strokeWidth: 2 }}
           />
         </AreaChart>
-      </ResponsiveContainer>
-    </div>
-  )
-}
-
-// ---------- Gasto por día de la semana ----------
-
-export function WeekdayChart({ data }: { data: readonly { label: string; total: number }[] }) {
-  const { money, tick } = useMoney()
-  const max = Math.max(...data.map((d) => d.total), 0)
-  return (
-    <div className="h-64 w-full min-w-0" role="img" aria-label="Gasto total por día de la semana">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={[...data]} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
-          <CartesianGrid vertical={false} stroke="var(--color-line)" />
-          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={axisTick} />
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-            width={48}
-            tickFormatter={(v: number) => tick(v)}
-            tick={axisTick}
-          />
-          <Tooltip
-            cursor={{ fill: 'var(--color-brand-50)' }}
-            formatter={(value) => [money(Number(value ?? 0)), 'Gastado']}
-            contentStyle={tooltipStyle}
-            labelStyle={labelStyle}
-          />
-          <Bar dataKey="total" radius={[6, 6, 0, 0]} maxBarSize={36}>
-            {data.map((d) => (
-              <Cell key={d.label} fill={d.total === max && max > 0 ? '#10b981' : '#6ee7b7'} />
-            ))}
-          </Bar>
-        </BarChart>
       </ResponsiveContainer>
     </div>
   )

@@ -51,9 +51,9 @@ export function PayDebtForm({ debtName, remaining, onSubmit }: PayDebtFormProps)
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {formError && <Alert tone="error">{formError}</Alert>}
-      <div className="rounded-xl bg-canvas px-4 py-3">
+      <div className="fx-stat">
         <p className="text-xs text-muted">{debtName}</p>
-        <p className="text-sm font-semibold text-heading">Falta por pagar: {money(remaining)}</p>
+        <p className="text-sm font-semibold text-ink">Falta por pagar: {money(remaining)}</p>
       </div>
       <MoneyField label="Monto a pagar" name="pay-amount" value={amount} onChange={setAmount} error={error} />
       <button

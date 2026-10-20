@@ -34,7 +34,7 @@ interface LogoMarkProps {
 /** Ícono de Cashly sobre su cuadrado verde oscuro, igual que el favicon. */
 export function LogoMark({ className = 'h-10 w-10' }: LogoMarkProps) {
   return (
-    <span className={`flex shrink-0 items-center justify-center rounded-[22%] bg-brand-900 ${className}`}>
+    <span className={`flex shrink-0 items-center justify-center rounded-full bg-[#084430] shadow-card ${className}`}>
       <img src="/brand/icon.png" alt="Cashly" className="h-[62%] w-auto" />
     </span>
   )

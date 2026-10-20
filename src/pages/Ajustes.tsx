@@ -52,7 +52,7 @@ export function AjustesPage() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card delay={100}>
-          <h2 className="text-base font-semibold text-heading">Apariencia</h2>
+          <h2 className="fx-card__title">Apariencia</h2>
           <p className="mt-0.5 text-xs text-muted">Elige cómo quieres ver Cashly.</p>
           <div role="radiogroup" aria-label="Tema" className="mt-5 grid grid-cols-2 gap-3">
             {THEMES.map((option) => {
@@ -64,10 +64,10 @@ export function AjustesPage() {
                   role="radio"
                   aria-checked={active}
                   onClick={() => setTheme(option.value)}
-                  className={`flex flex-col items-center gap-2 rounded-xl border px-4 py-5 text-sm font-medium transition-all ${
+                  className={`flex flex-col items-center gap-2 rounded-[var(--r-md)] border px-4 py-5 text-sm font-medium transition-all ${
                     active
-                      ? 'border-brand-500 bg-brand-50 text-heading ring-4 ring-brand-500/15'
-                      : 'border-line text-muted hover:border-brand-200 hover:text-ink'
+                      ? 'border-transparent bg-[var(--surface-mute)] text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]'
+                      : 'border-transparent bg-soft text-muted hover:text-ink'
                   }`}
                 >
                   <Icon path={option.icon} className="h-6 w-6" />
@@ -79,7 +79,7 @@ export function AjustesPage() {
         </Card>
 
         <Card delay={190}>
-          <h2 className="text-base font-semibold text-heading">Perfil</h2>
+          <h2 className="fx-card__title">Perfil</h2>
           <p className="mt-0.5 truncate text-xs text-muted">{user?.email}</p>
           <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-4">
             {saved && <Alert tone="success">Nombre actualizado.</Alert>}

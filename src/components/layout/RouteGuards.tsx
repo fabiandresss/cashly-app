@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth-context'
 function FullScreenSpinner() {
   return (
     <div className="flex h-full items-center justify-center">
-      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
     </div>
   )
 }

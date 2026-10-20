@@ -17,8 +17,8 @@ export function TextField({ label, value, onChange, error, type = 'text', ...res
   const isPassword = type === 'password'
 
   return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-heading">
+    <div className="fx-field">
+      <label htmlFor={id} className="fx-label">
         {label}
       </label>
       <div className="relative">
@@ -29,9 +29,7 @@ export function TextField({ label, value, onChange, error, type = 'text', ...res
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={`w-full rounded-xl border bg-surface px-3.5 py-3 text-sm text-ink shadow-sm outline-none transition-all placeholder:text-muted/75 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 ${
-            error ? 'border-red-400' : 'border-line'
-          } ${isPassword ? 'pr-11' : ''}`}
+          className={`fx-input ${isPassword ? 'pr-12' : ''}`}
           {...rest}
         />
         {isPassword && (
@@ -39,14 +37,14 @@ export function TextField({ label, value, onChange, error, type = 'text', ...res
             type="button"
             onClick={() => setVisible((v) => !v)}
             aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted transition-colors hover:text-link"
+            className="absolute inset-y-0 right-1 my-auto flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-mute hover:text-ink"
           >
             <Icon path={visible ? EYE_OFF : EYE} className="h-[18px] w-[18px]" />
           </button>
         )}
       </div>
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 text-xs text-red-600">
+        <p id={`${id}-error`} className="fx-error">
           {error}
         </p>
       )}

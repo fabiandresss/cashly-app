@@ -78,7 +78,7 @@ export function BudgetForm({ availableCategories, canCreateTotal, initial, initi
       {editing ? (
         <div>
           <p className="mb-1.5 text-sm font-medium text-heading">Categoría</p>
-          <p className="rounded-xl border border-line bg-canvas px-3.5 py-3 text-sm text-ink">
+          <p className="fx-alert">
             {initialLabel ?? 'Presupuesto'}
           </p>
         </div>

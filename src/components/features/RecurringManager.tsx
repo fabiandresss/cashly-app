@@ -83,7 +83,7 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
         <button
           type="button"
           onClick={() => setForm({ open: true })}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift"
+          className="fx-btn fx-btn--accent"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Programar movimiento
@@ -104,7 +104,7 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
       <Card delay={80}>
         {query.loading && !query.data ? (
           <div className="flex justify-center py-10">
-            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
           </div>
         ) : rules.length === 0 ? (
           <EmptyState
@@ -113,12 +113,12 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
             description="Por ejemplo: arriendo de $350.000 el día 1 de cada mes."
           />
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="fx-list fx-list--flat">
             {rules.map((rule) => {
               const category = rule.category_id ? categoryById.get(rule.category_id) : undefined
               const isIncome = rule.type === 'income'
               return (
-                <li key={rule.id} className={`flex items-center gap-3 py-3 ${rule.active ? '' : 'opacity-60'}`}>
+                <li key={rule.id} className={`fx-row ${rule.active ? '' : 'opacity-60'}`}>
                   <CategoryBadge icon={category?.icon} color={category?.color} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">
@@ -130,7 +130,7 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
                   </div>
                   <p
                     className={`shrink-0 text-sm font-semibold ${
-                      isIncome ? 'text-link' : 'text-red-600 dark:text-red-400'
+                      isIncome ? 'text-positive' : 'text-ink'
                     }`}
                   >
                     {isIncome ? '+' : '−'}
@@ -142,21 +142,13 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
                     aria-checked={rule.active}
                     aria-label={rule.active ? 'Pausar' : 'Activar'}
                     onClick={() => void toggle(rule)}
-                    className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                      rule.active ? 'bg-brand-600' : 'bg-line'
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-                        rule.active ? 'left-[22px]' : 'left-0.5'
-                      }`}
-                    />
-                  </button>
+                    className="fx-switch"
+                  ></button>
                   <button
                     type="button"
                     onClick={() => setForm({ open: true, editing: rule })}
                     aria-label="Editar movimiento programado"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
                   >
                     <Icon path={EDIT} className="h-4 w-4" />
                   </button>
@@ -164,7 +156,7 @@ export function RecurringManager({ categories, onGenerated }: RecurringManagerPr
                     type="button"
                     onClick={() => setToDelete(rule)}
                     aria-label="Eliminar movimiento programado"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+                    className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
                   >
                     <Icon path={TRASH} className="h-4 w-4" />
                   </button>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { Icon } from '@/components/ui/Icon'
+import { IconButton } from '@/components/fx'
 
 interface ModalProps {
   title: string
@@ -7,6 +7,9 @@ interface ModalProps {
   children: ReactNode
 }
 
+const CLOSE = 'M6 6l12 12M18 6L6 18'
+
+/** Diálogo: hoja que sube desde abajo en móvil y tarjeta centrada en escritorio. */
 export function Modal({ title, onClose, children }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -26,25 +29,13 @@ export function Modal({ title, onClose, children }: ModalProps) {
   }, [onClose])
 
   return (
-    <div className="fixed inset-0 z-30 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        className="relative max-h-[92vh] w-full max-w-md animate-fade-up overflow-y-auto rounded-t-3xl border border-line bg-surface p-6 shadow-lift sm:rounded-3xl"
-      >
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-heading">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
-          >
-            <Icon path="M6 6l12 12M18 6L6 18" className="h-5 w-5" />
-          </button>
+    <div className="fx-modal">
+      <div className="fx-modal__overlay" onClick={onClose} aria-hidden="true" />
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-label={title} className="fx-modal__panel">
+        <div className="fx-modal__grip" aria-hidden="true" />
+        <div className="fx-modal__head">
+          <h2 className="fx-h3">{title}</h2>
+          <IconButton icon={CLOSE} label="Cerrar" size="sm" onClick={onClose} />
         </div>
         {children}
       </div>

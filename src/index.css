@@ -1,31 +1,49 @@
 @import 'tailwindcss';
+@import './styles/tokens.css';
+@import './styles/components.css' layer(components);
+
+/* Los colores, radios y sombras de Tailwind leen los tokens del kit (src/styles/tokens.css),
+   así las clases utilitarias heredan el mismo look y el modo oscuro. */
+@theme inline {
+  --color-brand-50: var(--accent-soft);
+  --color-brand-100: #c9f0dd;
+  --color-brand-200: #9be3c3;
+  --color-brand-300: #5fd3a3;
+  --color-brand-400: #22c68a;
+  --color-brand-500: var(--accent);
+  --color-brand-600: var(--accent-hover);
+  --color-brand-700: #0a7d52;
+  --color-brand-800: #0b5f40;
+  --color-brand-900: #084430;
+  --color-brand-950: var(--accent-ink);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-2);
+  --color-faint: var(--ink-3);
+  --color-surface: var(--surface);
+  --color-soft: var(--surface-soft);
+  --color-mute: var(--surface-mute);
+  --color-canvas: var(--bg-page);
+  --color-line: var(--line-strong);
+  --color-heading: var(--ink);
+  --color-link: var(--positive);
+  --color-link-hover: var(--accent-hover);
+  --color-positive: var(--positive);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+
+  --radius-lg: var(--r-xs);
+  --radius-xl: var(--r-sm);
+  --radius-2xl: var(--r-md);
+  --radius-3xl: var(--r-lg);
+
+  --shadow-card: var(--shadow-1);
+  --shadow-lift: var(--shadow-2);
+  --shadow-glow: 0 8px 22px -8px rgb(0 187 119 / 0.45);
+}
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --color-brand-50: #ecfdf5;
-  --color-brand-100: #d1fae5;
-  --color-brand-200: #a7f3d0;
-  --color-brand-300: #6ee7b7;
-  --color-brand-400: #34d399;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
-  --color-brand-800: #065f46;
-  --color-brand-900: #064e3b;
-  --color-brand-950: #022c22;
-  --color-ink: #0b1f1a;
-  --color-muted: #5b6f68;
-  --color-surface: #ffffff;
-  --color-canvas: #f3f8f6;
-  --color-line: #dfeae5;
-  --color-heading: #064e3b;
-  --color-link: #047857;
-  --color-link-hover: #059669;
-
-  --shadow-card: 0 1px 2px rgb(6 78 59 / 0.07), 0 4px 10px rgb(6 78 59 / 0.08), 0 12px 24px -6px rgb(6 78 59 / 0.10);
-  --shadow-lift: 0 2px 4px rgb(6 78 59 / 0.08), 0 14px 32px rgb(6 78 59 / 0.16);
-  --shadow-glow: 0 8px 24px rgb(16 185 129 / 0.35);
-
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
@@ -42,8 +60,8 @@
     50% { transform: translateY(-4px) rotate(1.5deg); }
   }
   @keyframes ai-glow {
-    0%, 100% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.35), 0 6px 20px rgb(16 185 129 / 0.25); }
-    50% { box-shadow: 0 0 0 10px rgb(16 185 129 / 0), 0 8px 26px rgb(16 185 129 / 0.4); }
+    0%, 100% { box-shadow: 0 0 0 0 rgb(0 187 119 / 0.35), 0 6px 20px rgb(0 187 119 / 0.25); }
+    50% { box-shadow: 0 0 0 10px rgb(0 187 119 / 0), 0 8px 26px rgb(0 187 119 / 0.4); }
   }
   @keyframes ai-pulse {
     0%, 100% { transform: scale(1) rotate(0deg); }
@@ -72,8 +90,8 @@
     50% { transform: translateY(-8px); }
   }
   @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.45); }
-    100% { box-shadow: 0 0 0 18px rgb(16 185 129 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(0 187 119 / 0.45); }
+    100% { box-shadow: 0 0 0 18px rgb(0 187 119 / 0); }
   }
   @keyframes draw {
     from { stroke-dashoffset: 600; }
@@ -83,24 +101,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Modo oscuro: se redefinen los tokens semánticos. */
-.dark {
-  color-scheme: dark;
-  --color-brand-50: #0d2a22;
-  --color-brand-100: #12382d;
-  --color-brand-200: #1a4f3f;
-  --color-ink: #f2faf6;
-  --color-muted: #b6cbc3;
-  --color-surface: #101f1a;
-  --color-canvas: #0a1512;
-  --color-line: #1d332b;
-  --color-heading: #d1fae5;
-  --color-link: #34d399;
-  --color-link-hover: #6ee7b7;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.45), 0 4px 10px rgb(0 0 0 / 0.30), 0 12px 24px -6px rgb(0 0 0 / 0.40);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 14px 32px rgb(0 0 0 / 0.55);
-}
-
 html,
 body,
 #root {
@@ -109,17 +109,19 @@ body,
 
 body {
   margin: 0;
-  background:
-    radial-gradient(60rem 30rem at 85% -10%, rgb(16 185 129 / 0.10), transparent 60%),
-    var(--color-canvas);
-  color: var(--color-ink);
+  background: var(--bg-page);
+  color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

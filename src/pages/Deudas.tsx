@@ -50,8 +50,8 @@ function dueInfo(dueISO: string | null): { text: string; tone: 'danger' | 'warni
 }
 
 const TONE_CLASS = {
-  danger: 'text-red-600 dark:text-red-400',
-  warning: 'text-amber-600 dark:text-amber-400',
+  danger: 'text-danger',
+  warning: 'text-[var(--warning)]',
   normal: 'text-muted',
 } as const
 
@@ -64,7 +64,7 @@ function PaymentHistory({ debt, onChanged }: { debt: Debt; onChanged: () => void
   if (query.loading && !query.data) {
     return (
       <div className="flex justify-center py-8">
-        <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+        <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
       </div>
     )
   }
@@ -73,7 +73,7 @@ function PaymentHistory({ debt, onChanged }: { debt: Debt; onChanged: () => void
 
   return (
     <>
-      <ul className="divide-y divide-line">
+      <ul className="fx-list fx-list--flat">
         {payments.map((p) => (
           <li key={p.id} className="flex items-center gap-3 py-2.5">
             <div className="min-w-0 flex-1">
@@ -86,7 +86,7 @@ function PaymentHistory({ debt, onChanged }: { debt: Debt; onChanged: () => void
               onClick={() => setToUndo(p)}
               aria-label="Deshacer pago"
               title="Deshacer pago"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+              className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
             >
               <Icon path={TRASH} className="h-4 w-4" />
             </button>
@@ -165,15 +165,15 @@ export function DeudasPage() {
       <Card key={debt.id} interactive delay={240 + index * 60}>
         <div className="flex items-start gap-3">
           <span
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm ${
-              isSettled ? 'bg-brand-600' : 'bg-slate-500'
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-card ${
+              isSettled ? 'bg-accent text-accent-ink' : 'bg-[var(--chip)] text-ink'
             }`}
             aria-hidden="true"
           >
             <Icon path={isSettled ? CHECK : CARD} className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-heading">{debt.name}</p>
+            <p className="truncate text-[15px] font-semibold tracking-tight text-ink">{debt.name}</p>
             {isSettled ? (
               <p className="text-xs font-medium text-link">Pagada por completo</p>
             ) : due ? (
@@ -187,7 +187,7 @@ export function DeudasPage() {
             type="button"
             onClick={() => setForm({ open: true, editing: debt })}
             aria-label={`Editar ${debt.name}`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-brand-50 hover:text-ink"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
           >
             <Icon path={EDIT} className="h-4 w-4" />
           </button>
@@ -195,14 +195,14 @@ export function DeudasPage() {
             type="button"
             onClick={() => setToDelete(debt)}
             aria-label={`Eliminar ${debt.name}`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-500/10 hover:text-red-600"
+            className="fx-iconbtn fx-iconbtn--ghost fx-iconbtn--sm shrink-0"
           >
             <Icon path={TRASH} className="h-4 w-4" />
           </button>
         </div>
 
         <div className="mt-4 flex items-baseline justify-between text-sm">
-          <span className="font-semibold text-ink">{isSettled ? money(debt.total_amount) : money(remaining)}</span>
+          <span className="fx-num text-lg font-semibold tracking-tight text-ink">{isSettled ? money(debt.total_amount) : money(remaining)}</span>
           <span className="text-muted">
             {isSettled ? 'total pagado' : `pendiente de ${money(debt.total_amount)}`}
           </span>
@@ -213,10 +213,10 @@ export function DeudasPage() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(Math.min(ratio, 1) * 100)}
-          className="mt-2 h-2.5 overflow-hidden rounded-full bg-canvas"
+          className="mt-2 h-2 overflow-hidden rounded-full bg-mute"
         >
           <div
-            className="h-full rounded-full bg-brand-500 transition-all duration-700"
+            className="h-full rounded-full bg-ink transition-all duration-700"
             style={{ width: `${Math.min(Math.max(ratio, 0), 1) * 100}%` }}
           />
         </div>
@@ -229,7 +229,7 @@ export function DeudasPage() {
             <button
               type="button"
               onClick={() => setPaying(debt)}
-              className="rounded-xl bg-brand-700 px-3 py-2.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600"
+              className="fx-btn fx-btn--primary"
             >
               Pagar
             </button>
@@ -239,7 +239,7 @@ export function DeudasPage() {
           <button
             type="button"
             onClick={() => setHistory(debt)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-line px-3 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-50"
+            className="fx-btn fx-btn--soft"
           >
             <Icon path={CLOCK} className="h-4 w-4" />
             Pagos
@@ -256,7 +256,7 @@ export function DeudasPage() {
         <button
           type="button"
           onClick={() => setForm({ open: true })}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-600 hover:shadow-lift active:scale-[0.99] sm:w-auto"
+          className="fx-btn fx-btn--accent w-full sm:w-auto"
         >
           <Icon path={PLUS} className="h-4 w-4" />
           Nueva deuda
@@ -269,7 +269,7 @@ export function DeudasPage() {
           <button
             type="button"
             onClick={query.reload}
-            className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50"
+            className="fx-btn fx-btn--soft fx-btn--sm"
           >
             Reintentar
           </button>
@@ -282,7 +282,7 @@ export function DeudasPage() {
       )}
 
       {debts.length > 0 && (
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="fx-card fx-enter fx-grid-stats mb-4" data-cols="3">
           <StatCard
             label="Total pendiente"
             value={money(totals.remaining)}
@@ -309,7 +309,7 @@ export function DeudasPage() {
 
       {query.loading && !query.data ? (
         <div className="flex justify-center py-16">
-          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-500" />
+          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-mute border-t-ink" />
         </div>
       ) : debts.length === 0 && !query.error ? (
         <Card className="mt-5" delay={100}>
@@ -328,7 +328,7 @@ export function DeudasPage() {
           )}
           {settled.length > 0 && (
             <>
-              <h2 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-muted">Pagadas</h2>
+              <h2 className="fx-eyebrow fx-group-label !mt-8">Pagadas</h2>
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {settled.map((d, i) => renderDebt(d, i, true))}
               </div>
