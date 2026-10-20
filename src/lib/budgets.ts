@@ -24,7 +24,7 @@ export function budgetStatus(spent: number, limit: number, thresholdPercent: num
 }
 
 export const STATUS_STYLES: Record<BudgetStatus, { bar: string; text: string; label: string }> = {
-  ok: { bar: 'bg-brand-500', text: 'text-link', label: 'Dentro del presupuesto' },
-  warning: { bar: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', label: 'Cerca del límite' },
-  exceeded: { bar: 'bg-red-500', text: 'text-red-600 dark:text-red-400', label: 'Presupuesto excedido' },
+  ok: { bar: 'bg-ink', text: 'text-positive', label: 'Dentro del presupuesto' },
+  warning: { bar: 'bg-[var(--warning)]', text: 'text-[var(--warning)]', label: 'Cerca del límite' },
+  exceeded: { bar: 'bg-danger', text: 'text-danger', label: 'Presupuesto excedido' },
 }

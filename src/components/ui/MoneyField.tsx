@@ -43,12 +43,12 @@ export function MoneyField({ label, value, onChange, error, name }: MoneyFieldPr
   }
 
   return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-heading">
+    <div className="fx-field">
+      <label htmlFor={id} className="fx-label">
         {label}
       </label>
       <div className="relative">
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-sm font-medium text-muted">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex w-9 items-center justify-end text-base font-medium text-faint">
           $
         </span>
         <input
@@ -63,13 +63,11 @@ export function MoneyField({ label, value, onChange, error, name }: MoneyFieldPr
           onChange={handleChange}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={`w-full rounded-xl border bg-surface py-3 pl-9 pr-3.5 text-lg font-semibold tabular-nums text-ink shadow-sm outline-none transition-all placeholder:text-muted/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 ${
-            error ? 'border-red-400' : 'border-line'
-          }`}
+          className="fx-input fx-input--money"
         />
       </div>
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 text-xs text-red-600">
+        <p id={`${id}-error`} className="fx-error">
           {error}
         </p>
       )}

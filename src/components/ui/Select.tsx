@@ -35,8 +35,8 @@ function OptionIcon({ option }: { option: SelectOption }) {
   if (!option.icon) return null
   return (
     <span
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
-      style={{ backgroundColor: option.color ?? '#64748b' }}
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--chip)] shadow-card"
+      style={{ color: option.color ?? 'var(--ink-2)' }}
       aria-hidden="true"
     >
       <Icon path={option.icon} className="h-4 w-4" />
@@ -165,8 +165,8 @@ export function Select({ label, value, onChange, options }: SelectProps) {
   }
 
   return (
-    <div>
-      <label id={`${id}-label`} className="mb-1.5 block text-sm font-medium text-heading">
+    <div className="fx-field">
+      <label id={`${id}-label`} className="fx-label">
         {label}
       </label>
       <button
@@ -180,9 +180,7 @@ export function Select({ label, value, onChange, options }: SelectProps) {
         aria-activedescendant={open ? `${id}-opt-${active}` : undefined}
         onClick={() => (open ? close() : openMenu())}
         onKeyDown={handleKeyDown}
-        className={`flex w-full items-center gap-3 rounded-xl border bg-surface px-3.5 py-2.5 text-left text-sm text-ink shadow-sm outline-none transition-all focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 ${
-          open ? 'border-brand-500 ring-4 ring-brand-500/15' : 'border-line hover:border-brand-200'
-        }`}
+        className="fx-input flex items-center gap-3 !py-2 text-left"
       >
         {selected && <OptionIcon option={selected} />}
         <span className="min-w-0 flex-1 truncate">{selected?.label ?? ''}</span>
@@ -209,7 +207,7 @@ export function Select({ label, value, onChange, options }: SelectProps) {
                 ? { bottom: window.innerHeight - placement.top }
                 : { top: placement.top }),
             }}
-            className={`z-50 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-lift ${
+            className={`fx-menu z-50 overflow-y-auto ${
               placement.above ? 'origin-bottom animate-pop-up' : 'origin-top animate-pop'
             }`}
           >
@@ -226,13 +224,12 @@ export function Select({ label, value, onChange, options }: SelectProps) {
                   onPointerEnter={() => setActive(index)}
                   onPointerDown={(e) => e.preventDefault()}
                   onClick={() => choose(index)}
-                  className={`flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 text-sm transition-colors ${
-                    isActive ? 'bg-brand-50' : ''
-                  } ${isSelected ? 'font-semibold text-heading' : 'text-ink'}`}
+                  data-active={isActive}
+                  className="fx-menu__item"
                 >
                   <OptionIcon option={option} />
                   <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                  {isSelected && <Icon path={CHECK} className="h-4 w-4 shrink-0 text-link" />}
+                  {isSelected && <Icon path={CHECK} className="h-4 w-4 shrink-0 text-positive" />}
                 </li>
               )
             })}

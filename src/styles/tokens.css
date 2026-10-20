@@ -1,0 +1,124 @@
+/* ==========================================================================
+   Cashly — tokens de diseño (kit "fintech premium", tema mist personalizado)
+   Todo el color, radio y sombra de la app sale de estas variables.
+   Cambiar la marca = cambiar valores aquí, nunca en los componentes.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Superficies: página gris muy claro → tarjeta blanca → sub-tarjeta gris */
+  --bg-page: #eeefef;
+  --surface: #ffffff;
+  --surface-soft: #f5f6f6;
+  --surface-mute: #ecedee;
+  --surface-inverse: #0b0d0c;
+  --chip: #ffffff;
+
+  /* Texto (ink-2 ≥ 4.5:1 sobre --bg-page y blanco; ink-3 solo para metadatos) */
+  --ink: #0b0d0c;
+  --ink-2: #5d6268;
+  --ink-3: #9a9fa5;
+  --ink-inverse: #ffffff;
+  --ink-inverse-2: rgba(255, 255, 255, 0.62);
+
+  /* Acento de marca: verde Cashly. Texto sobre el acento casi negro (6.5:1). */
+  --accent: #00bb77;
+  --accent-hover: #00a86b;
+  --accent-ink: #04261a;
+  --accent-soft: #e4f7ee;
+  --accent-soft-ink: #075c3d;
+
+  /* Semántica: ingresos en verde sobrio (5.2:1 sobre blanco), egresos en negro */
+  --positive: #0a7d52;
+  --negative: var(--ink);
+  --warning: #9a5b00;
+  --warning-soft: #fff4e0;
+  --danger: #c0352b;
+  --danger-soft: #fdecea;
+
+  /* Líneas y sombras: suaves, anchas y de baja opacidad */
+  --line: rgba(11, 13, 12, 0.06);
+  --line-strong: rgba(11, 13, 12, 0.12);
+  --shadow-1: 0 1px 2px rgba(16, 24, 20, 0.04), 0 2px 8px -4px rgba(16, 24, 20, 0.06);
+  --shadow-2: 0 10px 28px -10px rgba(16, 40, 30, 0.14), 0 1px 2px rgba(16, 24, 20, 0.04);
+  --shadow-3: 0 24px 60px -20px rgba(16, 40, 30, 0.26);
+  --overlay: rgba(6, 16, 12, 0.42);
+
+  /* Hero: verde/teal profundo que se disuelve en blanco */
+  --hero-gradient:
+    radial-gradient(120% 60% at 50% 100%, rgba(214, 246, 230, 0.95) 0%, rgba(214, 246, 230, 0) 70%),
+    linear-gradient(180deg, #053b2b 0%, #0b5c45 26%, #18a679 56%, #a8ead0 80%, #ffffff 100%);
+  --hero-ink: #ffffff;
+  --hero-ink-2: rgba(255, 255, 255, 0.78);
+
+  /* Radios (escala fija) */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-pill: 999px;
+
+  /* Tipografía: sans con tracking negativo + mono para etiquetas */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Ritmo y movimiento */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 28px;
+  --space-7: 40px;
+  --space-8: 64px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 220ms;
+}
+
+/* Modo oscuro (se conserva la preferencia de Ajustes): mismas capas, invertidas. */
+:root.dark {
+  color-scheme: dark;
+  --bg-page: #0b0f0d;
+  --surface: #141a17;
+  --surface-soft: #1b221f;
+  --surface-mute: #232b27;
+  --surface-inverse: #f1f5f3;
+  --chip: #2a332f;
+
+  --ink: #f1f5f3;
+  --ink-2: #a9b3ae;
+  --ink-3: #6f7a75;
+  --ink-inverse: #0b0f0d;
+
+  --accent: #00bb77;
+  --accent-hover: #1fd08f;
+  --accent-ink: #04261a;
+  --accent-soft: #10302a;
+  --accent-soft-ink: #7fe3bb;
+
+  --positive: #3ddc9a;
+  --warning: #f2b552;
+  --warning-soft: #33280f;
+  --danger: #ff8a7f;
+  --danger-soft: #3a1714;
+
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 12px 30px -12px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-3: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --hero-gradient:
+    radial-gradient(120% 60% at 50% 100%, rgba(20, 70, 52, 0.7) 0%, rgba(20, 70, 52, 0) 70%),
+    linear-gradient(180deg, #021a12 0%, #063a2a 35%, #0b5c45 65%, #141a17 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur: 0ms;
+  }
+}

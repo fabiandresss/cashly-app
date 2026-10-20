@@ -1,21 +1,21 @@
+import type { ReactNode } from 'react'
+
 interface PageHeaderProps {
   title: string
   description: string
-  /** Versión con menos margen y título más pequeño, para pantallas de altura ajustada. */
+  /** Versión con menos margen, para pantallas de altura ajustada. */
   compact?: boolean
+  /** Etiqueta mono sobre el título. */
+  eyebrow?: ReactNode
 }
 
-export function PageHeader({ title, description, compact = false }: PageHeaderProps) {
+/** Titular de dos tonos: título en tinta y bajada en gris. */
+export function PageHeader({ title, description, compact = false, eyebrow }: PageHeaderProps) {
   return (
-    <header className={`animate-fade-up ${compact ? 'mb-4' : 'mb-4 sm:mb-8'}`}>
-      <h1
-        className={`bg-gradient-to-r from-heading to-brand-500 bg-clip-text font-bold tracking-tight text-transparent ${
-          compact ? 'text-2xl' : 'text-3xl'
-        }`}
-      >
-        {title}
-      </h1>
-      <p className="mt-1.5 text-sm text-muted">{description}</p>
+    <header className={`fx-enter min-w-0 ${compact ? 'mb-4' : 'mb-5 sm:mb-7'}`}>
+      {eyebrow && <p className="fx-eyebrow mb-2">{eyebrow}</p>}
+      <h1 className={compact ? 'fx-h2' : 'fx-h1'}>{title}</h1>
+      <p className="fx-lead mt-2 max-w-xl">{description}</p>
     </header>
   )
 }

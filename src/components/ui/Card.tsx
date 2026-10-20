@@ -6,19 +6,13 @@ interface CardProps {
   /** Retraso de entrada en ms, para animaciones escalonadas. */
   delay?: number
   interactive?: boolean
+  soft?: boolean
 }
 
-export function Card({ children, className = '', delay = 0, interactive = false }: CardProps) {
+export function Card({ children, className = '', delay = 0, soft = false }: CardProps) {
   const style: CSSProperties = { animationDelay: `${delay}ms` }
   return (
-    <div
-      style={style}
-      className={`min-w-0 animate-fade-up rounded-2xl border border-line bg-surface p-4 shadow-card sm:p-5 ${
-        interactive
-          ? 'transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift'
-          : ''
-      } ${className}`}
-    >
+    <div style={style} className={`fx-card fx-enter ${soft ? 'fx-card--soft' : ''} ${className}`}>
       {children}
     </div>
   )
