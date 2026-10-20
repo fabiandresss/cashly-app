@@ -1,11 +1,12 @@
 import { useMoney } from '@/hooks/useMoney'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Balance, buttonClass, Chip, Eyebrow, FxButton, FxCard, List, ListRow, PairBars, Progress, StatCard } from '@/components/fx'
 import { Alert } from '@/components/ui/Alert'
 import { CategoryBadge } from '@/components/ui/CategoryBadge'
 import { Icon } from '@/components/ui/Icon'
 import { useAsyncData } from '@/hooks/useAsyncData'
+import { useCoverProgress } from '@/hooks/useCoverProgress'
 import { useAuth } from '@/lib/auth-context'
 import { summarize } from '@/lib/dashboard'
 import { computeInsights } from '@/lib/insights'
@@ -97,10 +98,16 @@ export function DashboardPage() {
   const loading = transactionsQuery.loading && !summary
 
   const firstName = displayName.split(' ')[0] ?? displayName
+  const heroRef = useRef<HTMLElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useCoverProgress(heroRef, sheetRef)
 
   return (
     <>
-      <section className="fx-hero fx-enter">
+      {/* Al hacer scroll, la tarjeta del saldo sube y se superpone a la bienvenida. */}
+      <div className="fx-cover">
+      <section ref={heroRef} className="fx-hero fx-enter">
+        <div className="fx-hero__content">
         <Eyebrow className="first-letter:uppercase">{monthName}</Eyebrow>
         <h1 className="fx-h1 mt-3 max-w-2xl !text-[var(--hero-ink)]">
           Hola, {firstName}. <span className="text-[var(--hero-ink-2)]">Así van tus finanzas.</span>
@@ -122,9 +129,10 @@ export function DashboardPage() {
             Preguntar a Cashly AI
           </Link>
         </div>
+        </div>
       </section>
 
-      <div className="fx-sheet fx-enter" style={{ animationDelay: '80ms' }}>
+      <div ref={sheetRef} className="fx-sheet fx-enter" style={{ animationDelay: '80ms' }}>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="min-w-0">
             <p className="fx-balance-label">Saldo total · histórico</p>
@@ -157,6 +165,8 @@ export function DashboardPage() {
             icon="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"
           />
         </div>
+      </div>
+
       </div>
 
       {transactionsQuery.error && (
