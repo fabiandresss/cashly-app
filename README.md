@@ -196,13 +196,6 @@ npm run build    # comprobación de tipos y build
 
 La aplicación lee la URL y la clave pública de Supabase desde un archivo `.env` (ver [`.env.example`](.env.example)).
 
-## Ideas a futuro
-
-- Importar cartolas del banco (CSV/Excel) con categorización asistida.
-- Cuentas y billeteras con transferencias entre ellas.
-- Multimoneda (USD y UF).
-- Pruebas automatizadas.
-
 ---
 
 <div align="center">
