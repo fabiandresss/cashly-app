@@ -1,0 +1,17 @@
+name: daily-commit
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "fabiandresss"
+          git config user.email "fabianarmijo610@gmail.com"
+          git commit --allow-empty -m "chore: daily commit $(date -u +%F)"
+          git push
